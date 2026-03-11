@@ -1,121 +1,133 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Tracker Fondations</title>
-<style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 20px; }
-  h1 { font-size: 1.5rem; text-align: center; color: #fff; }
-  .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-  .tab { flex: 1; padding: 12px; text-align: center; background: #2c2c2c; border-radius: 8px; cursor: pointer; font-weight: bold; }
-  .tab.active { background: #007bff; color: white; }
-  .exercise { display: flex; align-items: center; background: #1e1e1e; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #007bff; }
-  .exercise.checked { opacity: 0.5; border-left-color: #4caf50; }
-  .details { flex: 1; margin-left: 15px; }
-  .name { font-size: 1.1rem; font-weight: bold; margin: 0; color: #fff; }
-  .reps { font-size: 0.9rem; color: #aaa; margin: 4px 0 0 0; }
-  input[type="checkbox"] { width: 24px; height: 24px; accent-color: #4caf50; }
-  .actions { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
-  button { padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-  .btn-save { background: #4caf50; color: white; }
-  .btn-reset { background: #333; color: #ccc; }
-  #history { margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
-  .history-item { font-size: 0.9rem; padding: 8px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker d'Entraînement</title>
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --primary: #bb86fc;
+            --text: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border: #333;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--surface);
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--surface);
+            padding: 10px;
+            position: sticky;
+            top: 0;
+        }
+        button {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button.active {
+            background-color: var(--primary);
+            color: var(--bg);
+        }
+        .container {
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .view {
+            display: none;
+        }
+        .view.active {
+            display: block;
+        }
+        .exercise {
+            background-color: var(--surface);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        .exercise h3 {
+            margin-top: 0;
+            font-size: 1.1em;
+        }
+        .exercise p {
+            font-size: 0.85em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+        .sets {
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            width: 100%;
+            background-color: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .btn-save, .btn-export {
+            display: block;
+            width: 100%;
+            background-color: var(--primary);
+            color: var(--bg);
+            padding: 15px;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        th, td {
+            padding: 8px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
 
-  <h1>Fondations & Rameur</h1>
-  
-  <div class="tabs">
-    <div class="tab active" id="tab-A" onclick="loadWorkout('A')">A</div>
-    <div class="tab" id="tab-B" onclick="loadWorkout('B')">B</div>
-    <div class="tab" id="tab-C" onclick="loadWorkout('C')">C</div>
-  </div>
+    <header>
+        <h2>Workout Tracker</h2>
+    </header>
 
-  <div id="workout-container"></div>
+    <nav>
+        <button id="navA" class="active" onclick="switchView('A')">Séance A</button>
+        <button id="navB" onclick="switchView('B')">Séance B</button>
+        <button id="navHistory" onclick="switchView('History')">Historique</button>
+    </nav>
 
-  <div class="actions">
-    <button class="btn-save" onclick="saveSession()">Terminer et Enregistrer la séance</button>
-    <button class="btn-reset" onclick="resetCurrent()">Réinitialiser les cases</button>
-  </div>
-
-  <div id="history">
-    <h3>Historique des séances</h3>
-    <div id="history-list"></div>
-    <button onclick="clearHistory()" style="margin-top:10px; padding:5px; font-size:0.7rem;">Effacer l'historique</button>
-  </div>
-
-  <script>
-    const workouts = {
-      A: [{id:'a1', n:'Dead Bug', r:'3x10'}, {id:'a2', n:'Bird-Dog', r:'3x8/côté'}, {id:'a3', n:'Pont fessier', r:'3x15'}, {id:'a4', n:'Fentes arrière', r:'3x10/j'}, {id:'a5', n:'Rameur', r:'15m'}],
-      B: [{id:'b1', n:'Planche latérale', r:'3x30s'}, {id:'b2', n:'McGill Curl-up', r:'3x10'}, {id:'b3', n:'Squat Bulgare', r:'3x8/j'}, {id:'b4', n:'Superman', r:'3x10'}, {id:'b5', n:'Rameur', r:'3x4m'}],
-      C: [{id:'c1', n:'Bird-Dog', r:'2x10'}, {id:'c2', n:'Planche frontale', r:'3x30s'}, {id:'c3', n:'Pont fessier uni', r:'3x8/j'}, {id:'c4', n:'Fentes arrière', r:'3x10/j'}, {id:'c5', n:'Pompes surélevées', r:'3x10'}, {id:'c6', n:'Rameur', r:'15m'}]
-    };
-
-    let currentWorkout = 'A';
-
-    function loadWorkout(type) {
-      currentWorkout = type;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('tab-' + type).classList.add('active');
-      render();
-    }
-
-    function toggle(id) {
-      const state = localStorage.getItem(id) === 'true';
-      localStorage.setItem(id, !state);
-      render();
-    }
-
-    function render() {
-      const container = document.getElementById('workout-container');
-      container.innerHTML = '';
-      workouts[currentWorkout].forEach(ex => {
-        const isChecked = localStorage.getItem(ex.id) === 'true';
-        container.innerHTML += `
-          <div class="exercise ${isChecked ? 'checked' : ''}" onclick="toggle('${ex.id}')">
-            <input type="checkbox" ${isChecked ? 'checked' : ''}>
-            <div class="details">
-              <p class="name">${ex.n}</p>
-              <p class="reps">${ex.r}</p>
-            </div>
-          </div>
-        `;
-      });
-      renderHistory();
-    }
-
-    function saveSession() {
-      const history = JSON.parse(localStorage.getItem('workout_history') || '[]');
-      const date = new Date().toLocaleDateString('fr-FR', {day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
-      history.unshift({ date: date, type: currentWorkout });
-      localStorage.setItem('workout_history', JSON.stringify(history));
-      resetCurrent();
-      alert('Séance ' + currentWorkout + ' enregistrée !');
-    }
-
-    function resetCurrent() {
-      workouts[currentWorkout].forEach(ex => localStorage.removeItem(ex.id));
-      render();
-    }
-
-    function renderHistory() {
-      const history = JSON.parse(localStorage.getItem('workout_history') || '[]');
-      const list = document.getElementById('history-list');
-      list.innerHTML = history.slice(0, 10).map(item => `
-        <div class="history-item">
-          <span>Séance ${item.type}</span>
-          <span>${item.date}</span>
-        </div>
-      `).join('');
-    }
-
-    function clearHistory() { if(confirm('Effacer tout l\'historique ?')) { localStorage.removeItem('workout_history'); renderHistory(); } }
-
-    render();
-  </script>
-</
-  body>
-</html>
+    <div class="container">
+        
+        <div id="viewA" class="view active">
+            <form id="formA">
+                <div class="exercise">
+                    <h3>1. Split Squat</h3>
+                    <p>3 séries | 10-12 reps/jambe | Dos droit, appui stable</p>
+                    <div class="sets">
+                        <input type="text" name="A_Ex1_S1" placeholder="S1 (ex: 12/12)">
+                        <input type="text" name="A_Ex1_S2" placeholder="S2">
+                        <input type="text" name="A_Ex1
+                          
