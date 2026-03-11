@@ -129,5 +129,171 @@
                     <div class="sets">
                         <input type="text" name="A_Ex1_S1" placeholder="S1 (ex: 12/12)">
                         <input type="text" name="A_Ex1_S2" placeholder="S2">
-                        <input type="text" name="A_Ex1
-                          
+                        <input type="text" name="A_Ex1_S3" placeholder="S3">
+                    </div>
+                </div>
+                <div class="exercise">
+                    <h3>2. Pompes</h3>
+                    <p>3 séries | Proche échec | Alignement strict</p>
+                    <div class="sets">
+                        <input type="number" name="A_Ex2_S1" placeholder="S1 (reps)">
+                        <input type="number" name="A_Ex2_S2" placeholder="S2">
+                        <input type="number" name="A_Ex2_S3" placeholder="S3">
+                    </div>
+                </div>
+                <div class="exercise">
+                    <h3>3. Pont Fessier Unilatéral</h3>
+                    <p>3 séries | 15 reps/jambe | Verrouiller le bassin en haut</p>
+                    <div class="sets">
+                        <input type="text" name="A_Ex3_S1" placeholder="S1 (ex: 15/15)">
+                        <input type="text" name="A_Ex3_S2" placeholder="S2">
+                        <input type="text" name="A_Ex3_S3" placeholder="S3">
+                    </div>
+                </div>
+                <div class="exercise">
+                    <h3>4. Planche RKC</h3>
+                    <p>3 séries | 20 sec max | Contraction maximale</p>
+                    <div class="sets">
+                        <input type="text" name="A_Ex4_S1" placeholder="S1 (sec)">
+                        <input type="text" name="A_Ex4_S2" placeholder="S2">
+                        <input type="text" name="A_Ex4_S3" placeholder="S3">
+                    </div>
+                </div>
+                <input type="text" id="notesA" placeholder="Notes (douleurs, tempo...)" style="width: 95%; margin-bottom: 10px;">
+                <button type="button" class="btn-save" onclick="saveSession('A')">Enregistrer la Séance A</button>
+            </form>
+        </div>
+
+        <div id="viewB" class="view">
+            <form id="formB">
+                <div class="exercise">
+                    <h3>1. Dead Bug</h3>
+                    <p>3 séries | 10 reps/côté | Lombaires plaquées au sol</p>
+                    <div class="sets">
+                        <input type="text" name="B_Ex1_S1" placeholder="S1 (ex: 10/10)">
+                        <input type="text" name="B_Ex1_S2" placeholder="S2">
+                        <input type="text" name="B_Ex1_S3" placeholder="S3">
+                    </div>
+                </div>
+                <div class="exercise">
+                    <h3>2. Fentes alternées</h3>
+                    <p>3 séries | 20 reps totales | Amortir la descente</p>
+                    <div class="sets">
+                        <input type="number" name="B_Ex2_S1" placeholder="S1 (reps)">
+                        <input type="number" name="B_Ex2_S2" placeholder="S2">
+                        <input type="number" name="B_Ex2_S3" placeholder="S3">
+                    </div>
+                </div>
+                <div class="exercise">
+                    <h3>3. Concept2 (HIIT)</h3>
+                    <p>10 séries | 30s ON / 30s OFF | Poussée jambes stricte</p>
+                    <div class="sets">
+                        <input type="text" name="B_Ex3_Data" placeholder="Distance totale moyenne (ex: 130m/int)">
+                    </div>
+                </div>
+                <div class="exercise">
+                    <h3>4. Pompes Isométriques</h3>
+                    <p>2 séries | 30s à 45s | Maintien position basse</p>
+                    <div class="sets">
+                        <input type="number" name="B_Ex4_S1" placeholder="S1 (sec)">
+                        <input type="number" name="B_Ex4_S2" placeholder="S2 (sec)">
+                    </div>
+                </div>
+                <input type="text" id="notesB" placeholder="Notes (douleurs, tempo...)" style="width: 95%; margin-bottom: 10px;">
+                <button type="button" class="btn-save" onclick="saveSession('B')">Enregistrer la Séance B</button>
+            </form>
+        </div>
+
+        <div id="viewHistory" class="view">
+            <h3>Dernières Séances</h3>
+            <div id="historyTableContainer"></div>
+            <button class="btn-export" onclick="exportCSV()">Exporter en CSV</button>
+        </div>
+
+    </div>
+
+    <script>
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById('view' + viewName).classList.add('active');
+            document.getElementById('nav' + viewName).classList.add('active');
+
+            if(viewName === 'History') loadHistory();
+        }
+
+        function saveSession(type) {
+            const form = document.getElementById('form' + type);
+            const formData = new FormData(form);
+            const notes = document.getElementById('notes' + type).value;
+            const date = new Date().toISOString().split('T')[0];
+
+            let sessionData = {
+                date: date,
+                type: type,
+                notes: notes,
+                exercises: {}
+            };
+
+            formData.forEach((value, key) => {
+                sessionData.exercises[key] = value || '-';
+            });
+
+            let history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
+            history.push(sessionData);
+            localStorage.setItem('workoutHistory', JSON.stringify(history));
+
+            alert('Séance enregistrée localement.');
+            form.reset();
+            document.getElementById('notes' + type).value = '';
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
+            const container = document.getElementById('historyTableContainer');
+            
+            if(history.length === 0) {
+                container.innerHTML = "<p>Aucune donnée enregistrée.</p>";
+                return;
+            }
+
+            let html = '<table><tr><th>Date</th><th>Type</th><th>Notes</th></tr>';
+            // Afficher les 10 dernières séances
+            history.slice().reverse().slice(0, 10).forEach(session => {
+                html += `<tr>
+                            <td>${session.date}</td>
+                            <td>Séance ${session.type}</td>
+                            <td>${session.notes}</td>
+                         </tr>`;
+            });
+            html += '</table>';
+            container.innerHTML = html;
+        }
+
+        function exportCSV() {
+            const history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
+            if(history.length === 0) {
+                alert('Rien à exporter.');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,Date,Seance,Data,Notes\n";
+
+            history.forEach(session => {
+                let exerciseData = JSON.stringify(session.exercises).replace(/,/g, ';');
+                let row = `${session.date},${session.type},${exerciseData},"${session.notes}"`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "workout_log.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
