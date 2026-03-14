@@ -3,297 +3,764 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tracker d'Entraînement</title>
+    <title>Zakat al-Fitr — Famille Bensahla</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
+        /* ── Design tokens ─────────────────────────────────────── */
         :root {
-            --bg: #121212;
-            --surface: #1e1e1e;
-            --primary: #bb86fc;
-            --text: #e0e0e0;
-            --text-muted: #a0a0a0;
-            --border: #333;
+            --green-dark:   #0d3320;
+            --green:        #1a5c38;
+            --green-light:  #2e8b57;
+            --gold:         #c9a44a;
+            --gold-light:   #e8c97a;
+            --cream:        #fdf8ee;
+            --cream-dark:   #f0e9d2;
+            --text:         #1a1a1a;
+            --text-muted:   #5a5a5a;
+            --white:        #ffffff;
+            --shadow:       0 4px 24px rgba(0,0,0,.15);
+            --radius:       12px;
         }
+
+        /* ── Reset & base ──────────────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
+            font-family: 'Lato', sans-serif;
+            background-color: var(--cream);
             color: var(--text);
-            margin: 0;
-            padding: 0;
+            line-height: 1.7;
         }
-        header {
-            background-color: var(--surface);
-            padding: 15px;
+
+        /* ── Geometric top banner ───────────────────────────────── */
+        .top-band {
+            height: 6px;
+            background: linear-gradient(90deg, var(--green-dark), var(--gold), var(--green-dark));
+        }
+
+        /* ── Hero ───────────────────────────────────────────────── */
+        .hero {
+            background: linear-gradient(160deg, var(--green-dark) 0%, var(--green) 60%, var(--green-light) 100%);
+            color: var(--white);
             text-align: center;
-            border-bottom: 1px solid var(--border);
+            padding: 60px 20px 80px;
+            position: relative;
+            overflow: hidden;
         }
-        nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: var(--surface);
-            padding: 10px;
-            position: sticky;
-            top: 0;
+        /* subtle geometric tile overlay */
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0px, rgba(255,255,255,.03) 1px, transparent 1px, transparent 20px),
+                repeating-linear-gradient(-45deg, rgba(255,255,255,.03) 0px, rgba(255,255,255,.03) 1px, transparent 1px, transparent 20px);
+            pointer-events: none;
         }
-        button {
-            background-color: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
+        .hero-crescent {
+            font-size: 4rem;
+            line-height: 1;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,.3));
         }
-        button.active {
-            background-color: var(--primary);
-            color: var(--bg);
+        .hero-arabic {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.4rem, 4vw, 2.2rem);
+            color: var(--gold-light);
+            letter-spacing: .04em;
+            margin-bottom: 8px;
         }
-        .container {
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
+        .hero h1 {
+            font-family: 'Amiri', serif;
+            font-size: clamp(2rem, 6vw, 3.4rem);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 6px;
         }
-        .view {
-            display: none;
+        .hero-family {
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            color: var(--gold-light);
+            font-weight: 300;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: 20px;
         }
-        .view.active {
+        .hero-divider {
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+            margin: 0 auto 20px;
+        }
+        .hero-subtitle {
+            font-size: 1rem;
+            color: rgba(255,255,255,.75);
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* ── Wave separator ─────────────────────────────────────── */
+        .wave {
             display: block;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            background: var(--green);
         }
-        .exercise {
-            background-color: var(--surface);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
+        .wave svg { display: block; }
+
+        /* ── Main layout ────────────────────────────────────────── */
+        main {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 48px 20px 80px;
+            display: grid;
+            gap: 40px;
         }
-        .exercise h3 {
-            margin-top: 0;
-            font-size: 1.1em;
+
+        /* ── Section card ───────────────────────────────────────── */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
-        .exercise p {
-            font-size: 0.85em;
+        .card-header {
+            background: linear-gradient(135deg, var(--green-dark), var(--green));
+            color: var(--white);
+            padding: 18px 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .card-header .icon { font-size: 1.5rem; }
+        .card-header h2 {
+            font-family: 'Amiri', serif;
+            font-size: 1.45rem;
+            font-weight: 700;
+        }
+        .card-header .arabic-label {
+            margin-left: auto;
+            font-family: 'Amiri', serif;
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            opacity: .9;
+        }
+        .card-body { padding: 28px; }
+
+        /* ── Info grid ──────────────────────────────────────────── */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .info-item {
+            background: var(--cream);
+            border-left: 4px solid var(--gold);
+            border-radius: 0 8px 8px 0;
+            padding: 16px 18px;
+        }
+        .info-item .label {
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--green);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .info-item .value {
+            font-family: 'Amiri', serif;
+            font-size: 1.15rem;
+            color: var(--text);
+        }
+
+        /* ── Quote block ────────────────────────────────────────── */
+        .hadith {
+            background: linear-gradient(135deg, var(--cream-dark), var(--cream));
+            border: 1px solid var(--gold-light);
+            border-radius: var(--radius);
+            padding: 28px;
+            text-align: center;
+        }
+        .hadith .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            color: var(--green-dark);
+            line-height: 2;
+            margin-bottom: 12px;
+            direction: rtl;
+        }
+        .hadith .source {
+            font-size: .85rem;
             color: var(--text-muted);
-            margin-bottom: 10px;
+            font-style: italic;
         }
-        .sets {
+
+        /* ── Calculator ─────────────────────────────────────────── */
+        .calc-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .calc-row label {
+            flex: 1 1 200px;
+            font-weight: 700;
+            color: var(--green-dark);
+        }
+        .calc-row label small {
+            display: block;
+            font-weight: 400;
+            font-size: .83rem;
+            color: var(--text-muted);
+        }
+        .number-input {
+            display: flex;
+            align-items: center;
+            border: 2px solid var(--cream-dark);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .number-input button {
+            background: var(--green-dark);
+            color: var(--white);
+            border: none;
+            width: 38px;
+            height: 38px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: background .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .number-input button:hover { background: var(--green); }
+        .number-input input {
+            width: 56px;
+            text-align: center;
+            border: none;
+            outline: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+            padding: 8px 4px;
+            background: var(--white);
+            -moz-appearance: textfield;
+        }
+        .number-input input::-webkit-inner-spin-button,
+        .number-input input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+        .calc-divider {
+            border: none;
+            border-top: 1px dashed var(--cream-dark);
+            margin: 24px 0;
+        }
+        .calc-result {
+            background: linear-gradient(135deg, var(--green-dark), var(--green));
+            color: var(--white);
+            border-radius: 10px;
+            padding: 22px 28px;
+            text-align: center;
+        }
+        .calc-result .result-label {
+            font-size: .9rem;
+            opacity: .8;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .calc-result .result-amount {
+            font-family: 'Amiri', serif;
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--gold-light);
+        }
+        .calc-result .result-note {
+            font-size: .82rem;
+            opacity: .7;
+            margin-top: 6px;
+        }
+
+        /* ── Members tracker ────────────────────────────────────── */
+        #member-list {
+            list-style: none;
+        }
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--cream-dark);
+        }
+        .member-item:last-child { border-bottom: none; }
+        .member-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--green), var(--green-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .member-name {
+            flex: 1;
+            font-weight: 700;
+            color: var(--green-dark);
+        }
+        .member-name small {
+            display: block;
+            font-weight: 400;
+            font-size: .82rem;
+            color: var(--text-muted);
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 14px;
+            border-radius: 99px;
+            font-size: .82rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all .2s;
+            user-select: none;
+        }
+        .badge.paid {
+            background: #e8f7ef;
+            color: #1a7a40;
+            border-color: #a8e0c0;
+        }
+        .badge.unpaid {
+            background: #fff4e0;
+            color: #9a6b00;
+            border-color: #f0d080;
+        }
+
+        .add-member-row {
             display: flex;
             gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
-        input {
-            width: 100%;
-            background-color: var(--bg);
+        .add-member-row input {
+            flex: 1 1 160px;
+            padding: 10px 14px;
+            border: 2px solid var(--cream-dark);
+            border-radius: 8px;
+            font-size: .95rem;
             color: var(--text);
-            border: 1px solid var(--border);
-            padding: 10px;
-            border-radius: 4px;
+            background: var(--white);
+            outline: none;
+            transition: border-color .2s;
+        }
+        .add-member-row input:focus { border-color: var(--green-light); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--green-dark), var(--green));
+            color: var(--white);
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: .95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity .2s;
+            white-space: nowrap;
+        }
+        .btn-primary:hover { opacity: .88; }
+
+        /* ── Summary banner ─────────────────────────────────────── */
+        #summary-bar {
+            background: linear-gradient(135deg, var(--gold), var(--gold-light));
+            border-radius: var(--radius);
+            padding: 20px 28px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 16px;
             text-align: center;
         }
-        .btn-save, .btn-export {
-            display: block;
-            width: 100%;
-            background-color: var(--primary);
-            color: var(--bg);
-            padding: 15px;
-            font-size: 1.1em;
-            margin-top: 20px;
+        .summary-stat .num {
+            font-family: 'Amiri', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--green-dark);
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9em;
+        .summary-stat .lbl {
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--green-dark);
+            opacity: .75;
         }
-        th, td {
-            padding: 8px;
-            border-bottom: 1px solid var(--border);
-            text-align: left;
+
+        /* ── Footer ─────────────────────────────────────────────── */
+        footer {
+            background: var(--green-dark);
+            color: rgba(255,255,255,.65);
+            text-align: center;
+            padding: 28px 20px;
+        }
+        footer .footer-arabic {
+            font-family: 'Amiri', serif;
+            font-size: 1.3rem;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+        }
+        footer p { font-size: .85rem; }
+
+        .btn-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #ccc;
+            padding: 4px;
+            line-height: 1;
+            transition: color .2s;
+        }
+        .btn-remove:hover { color: #e05555; }
+
+        /* ── Toast notification ─────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: var(--green-dark);
+            color: var(--white);
+            padding: 12px 28px;
+            border-radius: 99px;
+            font-size: .9rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,.25);
+            transition: transform .35s ease;
+            z-index: 999;
+            pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ── Responsive tweaks ──────────────────────────────────── */
+        @media (max-width: 520px) {
+            .card-body { padding: 18px; }
+            .calc-result .result-amount { font-size: 1.9rem; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h2>Workout Tracker</h2>
-    </header>
+<!-- Top decorative band -->
+<div class="top-band"></div>
 
-    <nav>
-        <button id="navA" class="active" onclick="switchView('A')">Séance A</button>
-        <button id="navB" onclick="switchView('B')">Séance B</button>
-        <button id="navHistory" onclick="switchView('History')">Historique</button>
-    </nav>
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<header class="hero">
+    <div class="hero-crescent">☽✦</div>
+    <p class="hero-arabic">زكاة الفطر</p>
+    <h1>Zakat al-Fitr</h1>
+    <p class="hero-family">Famille Bensahla</p>
+    <div class="hero-divider"></div>
+    <p class="hero-subtitle">Purifiez votre jeûne et réjouissez les cœurs des démunis en ce béni mois de Ramadan.</p>
+</header>
 
-    <div class="container">
-        
-        <div id="viewA" class="view active">
-            <form id="formA">
-                <div class="exercise">
-                    <h3>1. Split Squat</h3>
-                    <p>3 séries | 10-12 reps/jambe | Dos droit, appui stable</p>
-                    <div class="sets">
-                        <input type="text" name="A_Ex1_S1" placeholder="S1 (ex: 12/12)">
-                        <input type="text" name="A_Ex1_S2" placeholder="S2">
-                        <input type="text" name="A_Ex1_S3" placeholder="S3">
-                    </div>
-                </div>
-                <div class="exercise">
-                    <h3>2. Pompes</h3>
-                    <p>3 séries | Proche échec | Alignement strict</p>
-                    <div class="sets">
-                        <input type="number" name="A_Ex2_S1" placeholder="S1 (reps)">
-                        <input type="number" name="A_Ex2_S2" placeholder="S2">
-                        <input type="number" name="A_Ex2_S3" placeholder="S3">
-                    </div>
-                </div>
-                <div class="exercise">
-                    <h3>3. Pont Fessier Unilatéral</h3>
-                    <p>3 séries | 15 reps/jambe | Verrouiller le bassin en haut</p>
-                    <div class="sets">
-                        <input type="text" name="A_Ex3_S1" placeholder="S1 (ex: 15/15)">
-                        <input type="text" name="A_Ex3_S2" placeholder="S2">
-                        <input type="text" name="A_Ex3_S3" placeholder="S3">
-                    </div>
-                </div>
-                <div class="exercise">
-                    <h3>4. Planche RKC</h3>
-                    <p>3 séries | 20 sec max | Contraction maximale</p>
-                    <div class="sets">
-                        <input type="text" name="A_Ex4_S1" placeholder="S1 (sec)">
-                        <input type="text" name="A_Ex4_S2" placeholder="S2">
-                        <input type="text" name="A_Ex4_S3" placeholder="S3">
-                    </div>
-                </div>
-                <input type="text" id="notesA" placeholder="Notes (douleurs, tempo...)" style="width: 95%; margin-bottom: 10px;">
-                <button type="button" class="btn-save" onclick="saveSession('A')">Enregistrer la Séance A</button>
-            </form>
-        </div>
+<!-- Wave -->
+<div class="wave">
+    <svg viewBox="0 0 1200 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" height="50">
+        <path d="M0,30 C200,60 400,0 600,30 C800,60 1000,0 1200,30 L1200,60 L0,60 Z" fill="#fdf8ee"/>
+    </svg>
+</div>
 
-        <div id="viewB" class="view">
-            <form id="formB">
-                <div class="exercise">
-                    <h3>1. Dead Bug</h3>
-                    <p>3 séries | 10 reps/côté | Lombaires plaquées au sol</p>
-                    <div class="sets">
-                        <input type="text" name="B_Ex1_S1" placeholder="S1 (ex: 10/10)">
-                        <input type="text" name="B_Ex1_S2" placeholder="S2">
-                        <input type="text" name="B_Ex1_S3" placeholder="S3">
-                    </div>
-                </div>
-                <div class="exercise">
-                    <h3>2. Fentes alternées</h3>
-                    <p>3 séries | 20 reps totales | Amortir la descente</p>
-                    <div class="sets">
-                        <input type="number" name="B_Ex2_S1" placeholder="S1 (reps)">
-                        <input type="number" name="B_Ex2_S2" placeholder="S2">
-                        <input type="number" name="B_Ex2_S3" placeholder="S3">
-                    </div>
-                </div>
-                <div class="exercise">
-                    <h3>3. Concept2 (HIIT)</h3>
-                    <p>10 séries | 30s ON / 30s OFF | Poussée jambes stricte</p>
-                    <div class="sets">
-                        <input type="text" name="B_Ex3_Data" placeholder="Distance totale moyenne (ex: 130m/int)">
-                    </div>
-                </div>
-                <div class="exercise">
-                    <h3>4. Pompes Isométriques</h3>
-                    <p>2 séries | 30s à 45s | Maintien position basse</p>
-                    <div class="sets">
-                        <input type="number" name="B_Ex4_S1" placeholder="S1 (sec)">
-                        <input type="number" name="B_Ex4_S2" placeholder="S2 (sec)">
-                    </div>
-                </div>
-                <input type="text" id="notesB" placeholder="Notes (douleurs, tempo...)" style="width: 95%; margin-bottom: 10px;">
-                <button type="button" class="btn-save" onclick="saveSession('B')">Enregistrer la Séance B</button>
-            </form>
-        </div>
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main>
 
-        <div id="viewHistory" class="view">
-            <h3>Dernières Séances</h3>
-            <div id="historyTableContainer"></div>
-            <button class="btn-export" onclick="exportCSV()">Exporter en CSV</button>
-        </div>
-
+    <!-- ── Hadith card ── -->
+    <div class="hadith">
+        <p class="arabic-text">
+            «&nbsp;فَرَضَ رَسُولُ اللَّهِ ﷺ زَكَاةَ الْفِطْرِ طُهْرَةً لِلصَّائِمِ مِنَ اللَّغْوِ وَالرَّفَثِ، وَطُعْمَةً لِلْمَسَاكِينِ&nbsp;»
+        </p>
+        <p class="source">— Ibn 'Abbâs (رضي الله عنه) · Rapporté par Abû Dâwûd & Ibn Mâjah</p>
     </div>
 
-    <script>
-        function switchView(viewName) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            
-            document.getElementById('view' + viewName).classList.add('active');
-            document.getElementById('nav' + viewName).classList.add('active');
+    <!-- ── Infos card ── -->
+    <div class="card">
+        <div class="card-header">
+            <span class="icon">📖</span>
+            <h2>Ce qu'il faut savoir</h2>
+            <span class="arabic-label">أحكام</span>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">Obligation</div>
+                    <div class="value">Obligatoire pour tout musulman libre et solvable</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Montant</div>
+                    <div class="value">1 Sâ' de nourriture de base <em>(env. 2,5 kg)</em></div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Équivalent monétaire</div>
+                    <div class="value">Varie selon le pays — consultez votre mosquée locale</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Délai</div>
+                    <div class="value">Avant la prière de l'Aïd al-Fitr</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Bénéficiaires</div>
+                    <div class="value">Les pauvres et les nécessiteux (asnâf)</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Qui paie ?</div>
+                    <div class="value">Le chef de famille paie pour chaque personne à charge</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            if(viewName === 'History') loadHistory();
-        }
+    <!-- ── Calculator card ── -->
+    <div class="card">
+        <div class="card-header">
+            <span class="icon">🧮</span>
+            <h2>Calculateur</h2>
+            <span class="arabic-label">الحساب</span>
+        </div>
+        <div class="card-body">
 
-        function saveSession(type) {
-            const form = document.getElementById('form' + type);
-            const formData = new FormData(form);
-            const notes = document.getElementById('notes' + type).value;
-            const date = new Date().toISOString().split('T')[0];
+            <div class="calc-row">
+                <label>
+                    Nombre de personnes à charge
+                    <small>Vous + conjoint(e) + enfants + personnes à charge</small>
+                </label>
+                <div class="number-input">
+                    <button onclick="changeCount('persons', -1)" aria-label="Réduire le nombre de personnes">−</button>
+                    <input type="number" id="persons" value="4" min="1" max="50" oninput="calcZakat()">
+                    <button onclick="changeCount('persons', 1)" aria-label="Augmenter le nombre de personnes">+</button>
+                </div>
+            </div>
 
-            let sessionData = {
-                date: date,
-                type: type,
-                notes: notes,
-                exercises: {}
-            };
+            <div class="calc-row">
+                <label>
+                    Montant par personne (€)
+                    <small>Selon votre mosquée ou association locale</small>
+                </label>
+                <div class="number-input">
+                    <button onclick="changeCount('rate', -1)" aria-label="Réduire le montant par personne">−</button>
+                    <input type="number" id="rate" value="7" min="1" max="500" oninput="calcZakat()">
+                    <button onclick="changeCount('rate', 1)" aria-label="Augmenter le montant par personne">+</button>
+                </div>
+            </div>
 
-            formData.forEach((value, key) => {
-                sessionData.exercises[key] = value || '-';
-            });
+            <hr class="calc-divider">
 
-            let history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
-            history.push(sessionData);
-            localStorage.setItem('workoutHistory', JSON.stringify(history));
+            <div class="calc-result">
+                <div class="result-label">Total Zakat al-Fitr — Famille Bensahla</div>
+                <div class="result-amount" id="total-amount">28 €</div>
+                <div class="result-note" id="total-note">4 personnes × 7 €/personne</div>
+            </div>
 
-            alert('Séance enregistrée localement.');
-            form.reset();
-            document.getElementById('notes' + type).value = '';
-        }
+        </div>
+    </div>
 
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
-            const container = document.getElementById('historyTableContainer');
-            
-            if(history.length === 0) {
-                container.innerHTML = "<p>Aucune donnée enregistrée.</p>";
-                return;
-            }
+    <!-- ── Members tracker card ── -->
+    <div class="card">
+        <div class="card-header">
+            <span class="icon">👨‍👩‍👧‍👦</span>
+            <h2>Suivi Famille Bensahla</h2>
+            <span class="arabic-label">المتابعة</span>
+        </div>
+        <div class="card-body">
 
-            let html = '<table><tr><th>Date</th><th>Type</th><th>Notes</th></tr>';
-            // Afficher les 10 dernières séances
-            history.slice().reverse().slice(0, 10).forEach(session => {
-                html += `<tr>
-                            <td>${session.date}</td>
-                            <td>Séance ${session.type}</td>
-                            <td>${session.notes}</td>
-                         </tr>`;
-            });
-            html += '</table>';
-            container.innerHTML = html;
-        }
+            <ul id="member-list"></ul>
 
-        function exportCSV() {
-            const history = JSON.parse(localStorage.getItem('workoutHistory')) || [];
-            if(history.length === 0) {
-                alert('Rien à exporter.');
-                return;
-            }
+            <div class="add-member-row">
+                <input type="text" id="new-member-name" placeholder="Prénom du membre" maxlength="40">
+                <input type="text" id="new-member-role" placeholder="Rôle (ex : Père, Mère…)" maxlength="30">
+                <button class="btn-primary" onclick="addMember()">+ Ajouter</button>
+            </div>
 
-            let csvContent = "data:text/csv;charset=utf-8,Date,Seance,Data,Notes\n";
+        </div>
+    </div>
 
-            history.forEach(session => {
-                let exerciseData = JSON.stringify(session.exercises).replace(/,/g, ';');
-                let row = `${session.date},${session.type},${exerciseData},"${session.notes}"`;
-                csvContent += row + "\n";
-            });
+    <!-- ── Summary bar ── -->
+    <div id="summary-bar">
+        <div class="summary-stat">
+            <div class="num" id="sum-total">0</div>
+            <div class="lbl">Membres</div>
+        </div>
+        <div class="summary-stat">
+            <div class="num" id="sum-paid">0</div>
+            <div class="lbl">Payé ✓</div>
+        </div>
+        <div class="summary-stat">
+            <div class="num" id="sum-unpaid">0</div>
+            <div class="lbl">En attente</div>
+        </div>
+        <div class="summary-stat">
+            <div class="num" id="sum-amount">0 €</div>
+            <div class="lbl">Montant collecté</div>
+        </div>
+    </div>
 
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "workout_log.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    </script>
+</main>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+    <p class="footer-arabic">تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ</p>
+    <p>Que Allah accepte de nous et de vous — Famille Bensahla · Ramadan 1446 H</p>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+    /* ────────────────────────────────────────────
+       Default family members for Bensahla family
+    ──────────────────────────────────────────── */
+    const DEFAULT_MEMBERS = [
+        { name: 'Père',   role: 'Chef de famille' },
+        { name: 'Mère',   role: 'Conjointe'       },
+        { name: 'Enfant 1', role: 'Enfant'        },
+        { name: 'Enfant 2', role: 'Enfant'        },
+    ];
+
+    const STORAGE_KEY = 'bensahla_zakat_members';
+    const RATE_KEY    = 'bensahla_zakat_rate';
+
+    /* ── Helpers ── */
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    function saveMembers(list) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    }
+
+    function loadMembers() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) return JSON.parse(stored);
+        return DEFAULT_MEMBERS.map(m => ({ ...m, paid: false }));
+    }
+
+    /* ── Calculator ── */
+    function changeCount(id, delta) {
+        const el = document.getElementById(id);
+        const val = Math.max(Number(el.min), Math.min(Number(el.max), Number(el.value) + delta));
+        el.value = val;
+        calcZakat();
+    }
+
+    function calcZakat() {
+        const persons = Math.max(1, parseInt(document.getElementById('persons').value) || 1);
+        const rate    = Math.max(1, parseFloat(document.getElementById('rate').value) || 7);
+        const total   = persons * rate;
+        document.getElementById('total-amount').textContent = total.toLocaleString('fr-FR') + ' €';
+        document.getElementById('total-note').textContent =
+            persons + ' personne' + (persons > 1 ? 's' : '') + ' × ' + rate + ' €/personne';
+        localStorage.setItem(RATE_KEY, rate);
+    }
+
+    /* ── Member rendering ── */
+    const AVATARS = ['👨','👩','🧑','👦','👧','🧒','👴','👵','🧓'];
+
+    function avatarFor(idx) {
+        return AVATARS[idx % AVATARS.length];
+    }
+
+    function renderMembers() {
+        const members = loadMembers();
+        const rate    = parseFloat(document.getElementById('rate').value) || 7;
+        const ul      = document.getElementById('member-list');
+        ul.innerHTML  = '';
+
+        let paidCount = 0;
+        let paidAmt   = 0;
+
+        members.forEach((m, i) => {
+            if (m.paid) { paidCount++; paidAmt += rate; }
+            const li = document.createElement('li');
+            li.className = 'member-item';
+            li.innerHTML = `
+                <div class="member-avatar">${avatarFor(i)}</div>
+                <div class="member-name">
+                    ${escHtml(m.name)}
+                    <small>${escHtml(m.role)}</small>
+                </div>
+                <span class="badge ${m.paid ? 'paid' : 'unpaid'}"
+                      onclick="togglePaid(${i})"
+                      title="Cliquer pour changer le statut">
+                    ${m.paid ? '✓ Payé' : '⏳ En attente'}
+                </span>
+                <button onclick="removeMember(${i})"
+                        class="btn-remove"
+                        aria-label="Supprimer ${escHtml(m.name)}">✕</button>
+            `;
+            ul.appendChild(li);
+        });
+
+        /* summary */
+        document.getElementById('sum-total').textContent  = members.length;
+        document.getElementById('sum-paid').textContent   = paidCount;
+        document.getElementById('sum-unpaid').textContent = members.length - paidCount;
+        document.getElementById('sum-amount').textContent = paidAmt.toLocaleString('fr-FR') + ' €';
+
+        /* sync persons counter with member list */
+        document.getElementById('persons').value = members.length;
+        calcZakat();
+    }
+
+    function escHtml(str) {
+        const d = document.createElement('div');
+        d.appendChild(document.createTextNode(str));
+        return d.innerHTML;
+    }
+
+    function togglePaid(idx) {
+        const members = loadMembers();
+        members[idx].paid = !members[idx].paid;
+        saveMembers(members);
+        renderMembers();
+        showToast(members[idx].paid
+            ? '✓ ' + members[idx].name + ' marqué comme payé'
+            : '⏳ ' + members[idx].name + ' marqué en attente');
+    }
+
+    function addMember() {
+        const nameEl = document.getElementById('new-member-name');
+        const roleEl = document.getElementById('new-member-role');
+        const name   = nameEl.value.trim();
+        const role   = roleEl.value.trim() || 'Membre';
+        if (!name) { showToast('⚠ Veuillez entrer un prénom.'); return; }
+        const members = loadMembers();
+        members.push({ name, role, paid: false });
+        saveMembers(members);
+        nameEl.value = '';
+        roleEl.value = '';
+        renderMembers();
+        showToast('👤 ' + name + ' ajouté(e) à la liste.');
+    }
+
+    function removeMember(idx) {
+        const members = loadMembers();
+        const removed = members.splice(idx, 1)[0];
+        saveMembers(members);
+        renderMembers();
+        showToast('🗑 ' + removed.name + ' retiré(e) de la liste.');
+    }
+
+    /* ── Init ── */
+    (function init() {
+        const savedRate = localStorage.getItem(RATE_KEY);
+        if (savedRate) document.getElementById('rate').value = savedRate;
+        renderMembers();
+    })();
+</script>
 </body>
 </html>
