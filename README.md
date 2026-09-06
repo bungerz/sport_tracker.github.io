@@ -20,7 +20,11 @@ Application web progressive (PWA) personnelle dédiée à la longévité athlét
   * **Rameur & Tempo** : Métronome immersif 1:2 (1s poussée explosive / 2s glisse lente) et calculateur de SPI.
   * **Core Shield (5 min)** : Chronomètre guidé des 4 exercices fondamentaux (Dead Bug, Bird-Dog, Glute Bridge, Fascia plantaire).
 * **Journal de bord** : Historique multi-disciplines (Concept2, Natation, Randonnée, Salle) et audit longitudinal.
-* **Coach IA (Gemini)** : Générateur de micro-séances sur-mesure et chat clinique biomécanique.
+* **Coach IA (Gemini & Moteur Local)** :
+  * Générateur de séances sur-mesure avec **Ticket de Séance 1-Tap** intégrable directement dans le journal.
+  * Chat biomécanique interactif avec suggestions convertibles en séances.
+  * Support **multi-clés Gemini** avec testeur de connexion instantané et bascule transparente vers le moteur local autonome en cas d'absence de réseau ou de quota atteint.
+* **Notifications PWA & Rappels** : Rappels quotidiens et alerte de fin de routine Core Shield.
 * **Synchronisation & Sauvegarde** :
   * ☁️ **Drive 1-Tap** : Sauvegarde directe sur Google Drive via la Web Share API native.
   * ⌚ **Imports Matériel** : Prise en charge des fichiers Huawei Santé (`.tcx`, `.gpx`), exports Concept2 (`.csv`) et collage de résumés texte.

@@ -140,20 +140,36 @@
 
       // 2. Custom Protocol Fallback
       if (lower.includes('protocole') || lower.includes('sur-mesure') || lower.includes('crée un protocole')) {
-        return `### Protocole Sur-Mesure (${context.customTimeAvailable || 15} min • ${context.customFocus || 'Décompression'})
+        const isErg = (context.customFocus || '').includes('Rameur');
+        const isSwim = (context.customFocus || '').includes('Piscine');
+        const dur = context.customTimeAvailable || 15;
+        const sessionJson = JSON.stringify({
+          type: isErg ? 'CONCEPT2' : isSwim ? 'SWIM' : 'CORE_SHIELD',
+          durationMin: dur,
+          watts: isErg ? 110 : null,
+          cadence: isErg ? 20 : null,
+          distanceM: isSwim ? 750 : null,
+          notes: `Protocole Sur-Mesure : ${context.customFocus || 'Décompression & Gainage'}`
+        }, null, 2);
+
+        return `### Protocole Sur-Mesure (${dur} min • ${context.customFocus || 'Décompression'})
 
 * **Échauffement & Déverrouillage (2 min) :**
   1. *Chevalier servant activé :* 45s par jambe avec serrage fessier intense pour ouvrir le psoas.
   2. *Charnière au mur (Wall Hip Hinge) :* 10 répétitions lentes pour caler le pivot 11h-1h.
 
-* **Corps de Séance (${(context.customTimeAvailable || 15) - 3} min) :**
+* **Corps de Séance (${dur - 3} min) :**
   1. *Suspensions ou Décompression au sol :* 3 séries de 40s (décharge axiale L4-L5).
   2. *Dead Bug & Bird-Dog combinés :* 3 séries de 8 répétitions lentes (maintien lombaire strict).
   3. *Pont fessier avec tempo 2s :* 3 séries de 12 répétitions pour inhiber le psoas.
 
 * **Consignes de Sécurité :**
   * Zéro cambrure lombaire sous fatigue.
-  * Respiration diaphragmatique lente pendant les temps de pause.`;
+  * Respiration diaphragmatique lente pendant les temps de pause.
+
+[SESSION_DATA]
+${sessionJson}
+[/SESSION_DATA]`;
       }
 
       // 3. Historical Audit Fallback
@@ -192,9 +208,13 @@
     };
 
     const callGemini = async (prompt, systemInstruction = "", userContext = {}, apiKey = "") => {
-      const cleanKey = (apiKey || '').trim();
+      // Support single key or multiple keys (separated by comma, semicolon, or newlines)
+      const cleanKeys = (apiKey || '')
+        .split(/[\n,;]+/)
+        .map(k => k.trim())
+        .filter(k => k.length > 5);
       
-      if (!cleanKey) {
+      if (cleanKeys.length === 0) {
         return generateLocalExpertResponse(prompt, userContext);
       }
 
@@ -204,39 +224,43 @@
         "gemini-2.5-flash"
       ];
 
-      for (const model of modelsToTry) {
-        try {
-          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
-          const payload = {
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
-          };
-          const res = await fetchWithRetry(apiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          
-          if (res.ok) {
-            const data = await res.json();
-            const output = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (output && output.trim().length > 0) {
-              return output;
+      for (const key of cleanKeys) {
+        for (const model of modelsToTry) {
+          try {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+            const payload = {
+              contents: [{ role: "user", parts: [{ text: prompt }] }],
+              systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
+            };
+            const res = await fetchWithRetry(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            
+            if (res.ok) {
+              const data = await res.json();
+              const output = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+              if (output && output.trim().length > 0) {
+                return output;
+              }
             }
+          } catch (err) {
+            console.warn(`Model ${model} attempt failed with key:`, err);
           }
-        } catch (err) {
-          console.warn(`Model ${model} attempt failed:`, err);
         }
       }
 
-      console.warn("Gemini API calls failed, switching to local expert engine");
+      console.warn("All Gemini API keys/calls failed, switching to local expert engine");
       const fallbackText = generateLocalExpertResponse(prompt, userContext);
       return fallbackText + "\n\n*(⚡ Note : Analyse produite par le Moteur Biomécanique Local — Clé API inaccessible ou hors-ligne)*";
     };
 
     const formatMarkdown = (text) => {
       if (!text) return null;
-      return text.split('\n\n').map((block, idx) => {
+      // Strip any raw [SESSION_DATA] tags before rendering markdown
+      const cleanText = text.replace(/\[SESSION_DATA\][\s\S]*?\[\/SESSION_DATA\]/g, '').trim();
+      return cleanText.split('\n\n').map((block, idx) => {
         if (block.startsWith('### ') || block.startsWith('## ') || block.startsWith('# ')) {
           const clean = block.replace(/^#+\s*/, '');
           return <h4 key={idx} className="font-bold text-xs mt-2 mb-1 text-[#324f42]">{clean}</h4>;
@@ -285,17 +309,24 @@
     const IconSettings = ({ className }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>;
     const IconVolume = ({ className }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>;
     const IconVolumeOff = ({ className }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path strokeLinecap="round" strokeLinejoin="round" d="M17 14l4-4m0 4l-4-4"/></svg>;
+    const IconBell = ({ className }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>;
 
     function App() {
       const [activeTab, setActiveTab] = useState('today'); // 'today', 'training', 'history', 'ai'
       const [theme, setTheme] = useState('epure');
       const [soundEnabled, setSoundEnabled] = useState(true);
+      const [notificationsEnabled, setNotificationsEnabled] = useState(false);
       const [showSettingsModal, setShowSettingsModal] = useState(false);
       const [subTabTraining, setSubTabTraining] = useState('erg'); // 'erg', 'core', 'load'
 
-      // Gemini API Key User Config
+      // Gemini API Key User Config & Testing
       const [geminiApiKey, setGeminiApiKey] = useState('');
       const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+      const [apiKeyTesting, setApiKeyTesting] = useState(false);
+      const [apiKeyTestResult, setApiKeyTestResult] = useState(null);
+
+      // AI Generated Session Data
+      const [generatedSessionData, setGeneratedSessionData] = useState(null);
 
       // Bio-Guardrail State
       const [psoasTension, setPsoasTension] = useState(0);
@@ -402,6 +433,10 @@
           } else {
             window.__soundEnabled = true;
           }
+          const savedNotif = localStorage.getItem('health_os_notif_enabled');
+          if (savedNotif === 'true' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            setNotificationsEnabled(true);
+          }
           const savedCoreDate = localStorage.getItem('health_os_core_date_v10');
           const todayStr = new Date().toISOString().split('T')[0];
           if (savedCoreDate === todayStr) setCoreCompletedToday(true);
@@ -440,10 +475,18 @@
             const todayStr = new Date().toISOString().split('T')[0];
             localStorage.setItem('health_os_core_date_v10', todayStr);
             showToast("Core Shield validé ! Votre dos est protégé.");
+            if (notificationsEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+              try {
+                new Notification("Health & Longevity OS", {
+                  body: "✓ Core Shield terminé ! Votre dos est protégé pour la journée.",
+                  icon: "icon.svg"
+                });
+              } catch (err) {}
+            }
           }
         }
         return () => clearInterval(interval);
-      }, [isCoreRunning, coreTimerSeconds, corePhaseIndex]);
+      }, [isCoreRunning, coreTimerSeconds, corePhaseIndex, notificationsEnabled]);
 
       useEffect(() => {
         let timer = null;
@@ -612,7 +655,18 @@ Fais un triage direct en 3 points :
         setAiChatLoading(true);
 
         const systemInstruction = `Tu es l'assistant personnel et coach expert de longévité et biomécanique pour un chercheur de 36 ans (187 cm, santé lombaire L4-L5, pieds plats, Concept2, natation décompression, randonnée Zone 2).
-Sois pragmatique, concis, direct, encourageant et protecteur du bas du dos et du psoas. Réponds en français avec du formatage Markdown clair.`;
+Sois pragmatique, concis, direct, encourageant et protecteur du bas du dos et du psoas. Réponds en français avec du formatage Markdown clair.
+Si tu proposes une séance d'entraînement concrète dans ta réponse, ajoute à la toute fin ce bloc exact afin que l'utilisateur puisse la consigner directement en 1 clic :
+[SESSION_DATA]
+{
+  "type": "CONCEPT2" ou "SWIM" ou "CORE_SHIELD" ou "HIKE" ou "WORK_GYM",
+  "durationMin": nombre de minutes,
+  "watts": nombre de watts ou null,
+  "cadence": cadence s/m ou null,
+  "distanceM": metres ou null,
+  "notes": "Titre court de la séance"
+}
+[/SESSION_DATA]`;
 
         const prompt = `Question de l'utilisateur : "${userMsg}"
 Contexte actuel :
@@ -622,15 +676,39 @@ Contexte actuel :
 
         const userContext = { psoasTension, lumbarComfort, electrolytesTaken, currentLevel, levelData: activeLevelData };
         const reply = await callGemini(prompt, systemInstruction, userContext, geminiApiKey);
-        setAiChatMessages(prev => [...prev, { role: 'assistant', text: reply }]);
+
+        let sessionData = null;
+        let cleanReply = reply;
+        const match = reply.match(/\[SESSION_DATA\]([\s\S]*?)\[\/SESSION_DATA\]/);
+        if (match) {
+          try {
+            sessionData = JSON.parse(match[1].trim());
+            cleanReply = reply.replace(/\[SESSION_DATA\][\s\S]*?\[\/SESSION_DATA\]/, '').trim();
+          } catch (e) {}
+        }
+
+        setAiChatMessages(prev => [...prev, { role: 'assistant', text: cleanReply, sessionData }]);
         setAiChatLoading(false);
       };
 
       const handleGenerateCustomProtocol = async () => {
         setAiCustomProtocolLoading(true);
         setAiCustomProtocolText(null);
+        setGeneratedSessionData(null);
 
-        const systemInstruction = `Tu es un concepteur de séances micro-dosées en sport-santé et biomécanique. Crée des protocoles courts sans charge mentale pour un profil de 187 cm avec dos sensible.`;
+        const systemInstruction = `Tu es un concepteur de séances micro-dosées en sport-santé et biomécanique. Crée des protocoles courts sans charge mentale pour un profil de 187 cm avec dos sensible.
+À la toute fin de ta réponse, tu DOIS OBLIGATOIREMENT ajouter ce bloc au format JSON exact pour permettre à l'application de consigner la séance :
+[SESSION_DATA]
+{
+  "type": "CONCEPT2" | "SWIM" | "CORE_SHIELD" | "HIKE" | "WORK_GYM",
+  "durationMin": nombre,
+  "watts": nombre ou null,
+  "cadence": nombre ou null,
+  "distanceM": nombre ou null,
+  "notes": "Titre précis de la séance"
+}
+[/SESSION_DATA]`;
+
         const prompt = `Crée un protocole sur-mesure pour :
 * Temps disponible : ${customTime} minutes
 * Objectif / Environnement : ${customFocus}
@@ -643,8 +721,95 @@ Donne :
 
         const userContext = { customTimeAvailable: customTime, customFocus, psoasTension, lumbarComfort };
         const result = await callGemini(prompt, systemInstruction, userContext, geminiApiKey);
-        setAiCustomProtocolText(result);
+
+        let parsed = null;
+        let cleanText = result;
+        const match = result.match(/\[SESSION_DATA\]([\s\S]*?)\[\/SESSION_DATA\]/);
+        if (match) {
+          try {
+            parsed = JSON.parse(match[1].trim());
+            cleanText = result.replace(/\[SESSION_DATA\][\s\S]*?\[\/SESSION_DATA\]/, '').trim();
+          } catch (e) {}
+        }
+        if (!parsed) {
+          const isErg = customFocus.includes('Rameur');
+          const isSwim = customFocus.includes('Piscine');
+          parsed = {
+            type: isErg ? 'CONCEPT2' : isSwim ? 'SWIM' : 'CORE_SHIELD',
+            durationMin: customTime,
+            watts: isErg ? 110 : null,
+            cadence: isErg ? 20 : null,
+            distanceM: isSwim ? 750 : null,
+            notes: `Protocole IA : ${customFocus}`
+          };
+        }
+
+        setAiCustomProtocolText(cleanText);
+        setGeneratedSessionData(parsed);
         setAiCustomProtocolLoading(false);
+      };
+
+      const handleToggleNotifications = async () => {
+        if (!('Notification' in window)) {
+          showToast("Notifications non supportées sur ce navigateur.");
+          return;
+        }
+        if (notificationsEnabled) {
+          setNotificationsEnabled(false);
+          localStorage.setItem('health_os_notif_enabled', 'false');
+          showToast("Rappels désactivés.");
+          return;
+        }
+        if (Notification.permission === 'granted') {
+          setNotificationsEnabled(true);
+          localStorage.setItem('health_os_notif_enabled', 'true');
+          try {
+            new Notification("Health & Longevity OS", {
+              body: "✓ Rappels quotidiens activés (Bilan du matin & Core Shield).",
+              icon: "icon.svg"
+            });
+          } catch (e) {}
+          showToast("✓ Rappels quotidiens activés !");
+        } else if (Notification.permission !== 'denied') {
+          const perm = await Notification.requestPermission();
+          if (perm === 'granted') {
+            setNotificationsEnabled(true);
+            localStorage.setItem('health_os_notif_enabled', 'true');
+            try {
+              new Notification("Health & Longevity OS", {
+                body: "✓ Rappels quotidiens activés (Bilan du matin & Core Shield).",
+                icon: "icon.svg"
+              });
+            } catch (e) {}
+            showToast("✓ Notifications autorisées !");
+          } else {
+            showToast("Autorisation refusée dans le navigateur.");
+          }
+        } else {
+          showToast("Notifications bloquées dans les réglages du navigateur.");
+        }
+      };
+
+      const handleTestApiKey = async () => {
+        if (!geminiApiKey.trim()) {
+          showToast("Veuillez d'abord renseigner une clé API.");
+          return;
+        }
+        setApiKeyTesting(true);
+        setApiKeyTestResult(null);
+        try {
+          const testResult = await callGemini("Réponds uniquement: OK", "", {}, geminiApiKey);
+          if (testResult && !testResult.includes("Moteur Biomécanique Local")) {
+            setApiKeyTestResult({ ok: true, msg: "✓ Connexion réussie à Google Gemini Flash !" });
+            showToast("✓ Clé Gemini validée avec succès !");
+          } else {
+            setApiKeyTestResult({ ok: false, msg: "⚠ Clé non reconnue ou quota atteint (utilise le moteur local)." });
+            showToast("Échec de la validation de la clé.");
+          }
+        } catch (err) {
+          setApiKeyTestResult({ ok: false, msg: "Erreur : " + err.message });
+        }
+        setApiKeyTesting(false);
       };
 
       const handleRunAiAudit = async () => {
@@ -1151,7 +1316,7 @@ Fais un audit de progression :
                   </div>
                 </div>
 
-                {/* Audio & Clé Gemini */}
+                {/* Audio, Clé Gemini & Notifications */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <div className={`p-3 rounded-xl border flex items-center justify-between ${st.subCard}`}>
                     <div>
@@ -1176,16 +1341,36 @@ Fais un audit de progression :
                   <div className={`p-3 rounded-xl border flex items-center justify-between ${st.subCard}`}>
                     <div>
                       <p className="text-xs font-bold flex items-center gap-1.5">
-                        <IconKey className="w-3.5 h-3.5 text-[#446857]" />
-                        Clé IA Gemini
+                        <IconBell className="w-3.5 h-3.5 text-[#446857]" />
+                        Rappels PWA
                       </p>
-                      <p className={`text-[10px] ${st.subtext}`}>{geminiApiKey ? 'Configurée ✓' : 'Non renseignée'}</p>
+                      <p className={`text-[10px] ${st.subtext}`}>
+                        {notificationsEnabled ? 'Actifs (Core Shield)' : 'Désactivés'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleToggleNotifications}
+                      className={`px-2.5 py-1 rounded-full text-xs font-semibold transition ${notificationsEnabled ? st.btnPrimary : st.btnSecondary}`}
+                    >
+                      {notificationsEnabled ? 'Activé' : 'Activer'}
+                    </button>
+                  </div>
+
+                  <div className={`p-3 rounded-xl border flex items-center justify-between sm:col-span-2 ${st.subCard}`}>
+                    <div className="min-w-0 pr-2">
+                      <p className="text-xs font-bold flex items-center gap-1.5 truncate">
+                        <IconKey className="w-3.5 h-3.5 text-[#446857] shrink-0" />
+                        Clé IA Gemini (Google AI Studio)
+                      </p>
+                      <p className={`text-[10px] truncate ${st.subtext}`}>
+                        {geminiApiKey.trim() ? 'Clé(s) configurée(s) • Prêt ✓' : 'Non renseignée (moteur local autonome)'}
+                      </p>
                     </div>
                     <button
                       onClick={() => setShowApiKeyModal(true)}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${st.btnSecondary}`}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition shrink-0 ${st.btnSecondary}`}
                     >
-                      {geminiApiKey ? 'Modifier' : 'Ajouter'}
+                      {geminiApiKey.trim() ? 'Gérer / Tester' : 'Ajouter (Gratuit)'}
                     </button>
                   </div>
                 </div>
@@ -1253,21 +1438,96 @@ Fais un audit de progression :
             </div>
           )}
 
+          {/* Dedicated Gemini API Key Modal */}
+          {showApiKeyModal && (
+            <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+              <div className={`max-w-md w-full rounded-2xl p-5 border ${st.card} space-y-4 shadow-xl`}>
+                <div className="flex items-center justify-between border-b pb-3 border-[#e2ded6] dark:border-zinc-800">
+                  <div className="flex items-center space-x-2">
+                    <IconKey className="w-4 h-4 text-[#446857]" />
+                    <h2 className="text-xs font-bold uppercase tracking-wider">Clé(s) Google Gemini Flash</h2>
+                  </div>
+                  <button onClick={() => setShowApiKeyModal(false)} className={`p-1 rounded-lg text-xs ${st.subtext} font-bold hover:opacity-100`}>✕</button>
+                </div>
+
+                <div className="space-y-3 text-xs leading-relaxed">
+                  <div className="bg-[#446857]/10 p-3 rounded-xl border border-[#446857]/20 space-y-1">
+                    <p className="font-semibold text-[#446857]">Comment obtenir votre clé gratuite ?</p>
+                    <p className="text-[11px] opacity-85">
+                      1. Rendez-vous sur <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="underline font-bold text-[#446857]">Google AI Studio (Gratuit) &rarr;</a><br />
+                      2. Cliquez sur "Create API key". Copiez et collez ci-dessous.<br />
+                      3. Vous pouvez saisir plusieurs clés séparées par des virgules ou retours à la ligne (rotation automatique en cas de quota dépassé).
+                    </p>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="font-semibold text-xs">Clé(s) API :</label>
+                      <span className="text-[10px] opacity-60 font-mono">{geminiApiKey.trim() ? `${geminiApiKey.split(/[\n,;]+/).filter(k => k.trim()).length} clé(s)` : '0 clé'}</span>
+                    </div>
+                    <textarea
+                      rows={3}
+                      value={geminiApiKey}
+                      onChange={e => {
+                        setGeminiApiKey(e.target.value);
+                        localStorage.setItem('health_os_gemini_api_key', e.target.value.trim());
+                        setApiKeyTestResult(null);
+                      }}
+                      placeholder="AIzaSy... (ou plusieurs clés séparées par des virgules)"
+                      className={`w-full p-2.5 rounded-xl text-xs font-mono border outline-none ${st.subCard}`}
+                    />
+                  </div>
+
+                  {apiKeyTestResult && (
+                    <div className={`p-2.5 rounded-xl border text-xs flex items-center gap-2 ${apiKeyTestResult.ok ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-800 dark:text-emerald-300' : 'bg-amber-500/15 border-amber-500/30 text-amber-800 dark:text-amber-300'}`}>
+                      <span className="text-xs">{apiKeyTestResult.msg}</span>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-1">
+                    <button
+                      onClick={handleTestApiKey}
+                      disabled={apiKeyTesting || !geminiApiKey.trim()}
+                      className={`flex-1 py-2 rounded-xl text-xs font-semibold border transition flex items-center justify-center gap-1.5 ${st.btnSecondary}`}
+                    >
+                      <IconSparkles className="w-3.5 h-3.5" />
+                      {apiKeyTesting ? 'Test de ping...' : 'Tester la clé'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        localStorage.setItem('health_os_gemini_api_key', geminiApiKey.trim());
+                        showToast("Clé(s) Gemini enregistrée(s) localement.");
+                        setShowApiKeyModal(false);
+                      }}
+                      className={`flex-1 py-2 rounded-xl text-xs font-bold transition ${st.btnPrimary}`}
+                    >
+                      Valider & Fermer
+                    </button>
+                  </div>
+
+                  <p className="text-[10px] opacity-60 leading-tight border-t pt-2 border-[#e2ded6] dark:border-zinc-800">
+                    🔒 <strong>Stockage 100% Local :</strong> La clé reste exclusivement dans le localStorage de votre navigateur. Elle n'est jamais poussée sur GitHub ni hébergée sur un serveur tiers.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Top Header Bar */}
-          <header className={`sticky top-0 z-30 ${st.header} backdrop-blur border-b px-4 py-2.5 safe-top flex items-center justify-between`}>
-            <div className="flex items-center space-x-2.5">
+          <header className={`sticky top-0 z-30 ${st.header} backdrop-blur border-b px-3.5 py-2 safe-top flex items-center justify-between gap-2`}>
+            <div className="flex items-center space-x-2 min-w-0 flex-1">
               <div className="w-8 h-8 rounded-lg bg-[#324f42]/10 flex items-center justify-center text-[#324f42] shrink-0">
                 <IconShield className="w-4 h-4" />
               </div>
-              <div>
-                <h1 className="text-xs font-bold tracking-wider uppercase">Health & Longevity OS</h1>
-                <p className={`text-[11px] ${st.subtext}`}>
-                  Palier Actif : <span className="font-semibold text-[#324f42]">Niveau {currentLevel} / 12</span> ({activeLevelData.phaseName.split(':')[0]})
+              <div className="min-w-0">
+                <h1 className="text-xs font-bold tracking-wider uppercase truncate">Health & Longevity OS</h1>
+                <p className={`text-[10.5px] truncate ${st.subtext}`}>
+                  <span className="font-semibold text-[#324f42]">Niv. {currentLevel} / 12</span> • {activeLevelData.phaseName.split(':')[0]}
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-1.5">
+            <div className="flex items-center space-x-1.5 shrink-0">
               <button 
                 onClick={() => {
                   const next = !soundEnabled;
@@ -1276,14 +1536,14 @@ Fais un audit de progression :
                   showToast(next ? "Son activé" : "Son coupé (muet)");
                 }}
                 title={soundEnabled ? "Couper le son" : "Activer le son"}
-                className={`p-2 rounded-lg ${st.btnSecondary} text-xs flex items-center justify-center transition min-w-[36px] min-h-[36px]`}
+                className={`p-1.5 sm:p-2 rounded-lg ${st.btnSecondary} text-xs flex items-center justify-center transition min-w-[34px] min-h-[34px]`}
               >
                 {soundEnabled ? <IconVolume className="w-4 h-4 text-[#446857]" /> : <IconVolumeOff className="w-4 h-4 text-stone-400" />}
               </button>
               <button 
                 onClick={handleShareOrExportJson}
                 title="1-Tap Sauvegarder sur Google Drive / Partager"
-                className={`px-3 py-2 rounded-lg ${st.btnPrimary} text-xs flex items-center space-x-1.5 transition shadow-sm min-h-[36px]`}
+                className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg ${st.btnPrimary} text-xs flex items-center space-x-1.5 transition shadow-sm min-h-[34px]`}
               >
                 <IconShare className="w-3.5 h-3.5" />
                 <span className="text-xs font-semibold hidden sm:inline">Drive 1-Tap</span>
@@ -1291,7 +1551,7 @@ Fais un audit de progression :
               <button 
                 onClick={() => setShowSettingsModal(true)}
                 title="Paramètres & Synchronisation"
-                className={`p-2 rounded-lg ${st.btnSecondary} text-xs flex items-center justify-center transition min-w-[36px] min-h-[36px]`}
+                className={`p-1.5 sm:p-2 rounded-lg ${st.btnSecondary} text-xs flex items-center justify-center transition min-w-[34px] min-h-[34px]`}
               >
                 <IconSettings className="w-4 h-4" />
               </button>
@@ -1447,26 +1707,26 @@ Fais un audit de progression :
                     </div>
 
                     {/* Steppers for Rapid Tuning */}
-                    <div className="flex items-center justify-between gap-1.5 text-xs">
-                      <div className="flex items-center gap-1.5">
+                    <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
+                      <div className="flex items-center flex-wrap gap-1.5">
                         <div className="flex items-center rounded-lg border p-0.5 bg-black/5 dark:bg-white/5">
-                          <span className="px-1.5 text-[10px] font-bold opacity-60">Watts:</span>
+                          <span className="px-1 text-[10px] font-bold opacity-60">Watts:</span>
                           <button 
                             onClick={() => setCustomWattsDelta(d => d - 5)}
-                            className="px-2 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
+                            className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
                           >-5</button>
                           <span className="px-1.5 font-mono font-bold text-xs">{effectiveWatts}W</span>
                           <button 
                             onClick={() => setCustomWattsDelta(d => d + 5)}
-                            className="px-2 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
+                            className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
                           >+5</button>
                         </div>
 
                         <div className="flex items-center rounded-lg border p-0.5 bg-black/5 dark:bg-white/5">
-                          <span className="px-1.5 text-[10px] font-bold opacity-60">Cad:</span>
+                          <span className="px-1 text-[10px] font-bold opacity-60">Cad:</span>
                           <button 
                             onClick={() => setCustomCadenceDelta(d => d - 1)}
-                            className="px-2 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
+                            className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
                           >-1</button>
                           <span className="px-1.5 font-mono font-bold text-xs">{effectiveCadence}</span>
                           <button 
@@ -1519,44 +1779,46 @@ Fais un audit de progression :
                     {/* Big 1-Tap Logging Button */}
                     <button
                       onClick={handleLogPrescribedRow}
-                      className={`w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition ${st.btnPrimary}`}
+                      className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold flex flex-wrap items-center justify-center gap-1.5 shadow-sm transition ${st.btnPrimary}`}
                     >
-                      <IconCheck className="w-3.5 h-3.5" />
-                      {todaySessionLogged 
-                        ? `✓ Séance Validée (+ Consigner une autre série • ${effectiveWatts}W)` 
-                        : `⚡ Valider la séance (1-Tap) • ${effectiveWatts}W @ ${effectiveCadence}s/m (${effectiveSpi} SPI)`}
+                      <IconCheck className="w-3.5 h-3.5 shrink-0" />
+                      {todaySessionLogged ? (
+                        <span>✓ Séance Validée (+ Consigner autre série • {effectiveWatts}W)</span>
+                      ) : (
+                        <span>⚡ Valider (1-Tap) • {effectiveWatts}W @ {effectiveCadence}s/m ({effectiveSpi} SPI)</span>
+                      )}
                     </button>
                   </div>
                 </div>
 
                 {/* Core Shield Banner */}
-                <div className={`rounded-2xl p-4 border transition ${st.card} flex items-center justify-between`}>
-                  <div>
+                <div className={`rounded-2xl p-4 border transition ${st.card} flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+                  <div className="space-y-0.5">
                     <h2 className="text-xs font-bold flex items-center gap-1.5">
                       <IconShield className="w-3.5 h-3.5 text-[#446857]" />
                       Core Shield Quotidien (5 min)
                     </h2>
-                    <p className={`text-[11.5px] mt-0.5 ${st.subtext}`}>
+                    <p className={`text-[11.5px] ${st.subtext}`}>
                       {coreCompletedToday 
                         ? '✓ Routine validée. Tronc et lombaires protégés.' 
                         : 'Dead Bug • Bird-Dog • Glute Bridge. Inactive les spasmes.'}
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="flex items-center gap-2 shrink-0 flex-wrap">
                     {!coreCompletedToday && (
                       <button
                         onClick={handleQuickValidateCoreShield}
                         title="Valider sans lancer le compte à rebours"
-                        className={`px-2.5 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1 border border-[#446857]/30 ${st.btnSecondary}`}
+                        className={`flex-1 sm:flex-initial px-2.5 py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1 border border-[#446857]/30 ${st.btnSecondary}`}
                       >
                         <IconCheck className="w-3 h-3 text-[#446857]" />
-                        ⚡ Fait en autonomie
+                        ⚡ En autonomie
                       </button>
                     )}
                     <button
                       onClick={() => { setActiveTab('training'); setSubTabTraining('core'); }}
-                      className={`px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
+                      className={`flex-1 sm:flex-initial px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 ${
                         coreCompletedToday ? st.btnSecondary : st.btnPrimary
                       }`}
                     >
@@ -1702,6 +1964,27 @@ Fais un audit de progression :
             {activeTab === 'ai' && (
               <div className="space-y-4">
                 
+                {/* Banner if no Gemini Key configured */}
+                {!geminiApiKey.trim() && (
+                  <div className="bg-[#fcf3e8] border border-[#e8c89b] rounded-2xl p-3.5 flex items-start justify-between gap-3 text-[#5c3e1e] shadow-sm">
+                    <div className="flex items-start space-x-2.5">
+                      <IconKey className="w-4 h-4 text-[#a8651e] shrink-0 mt-0.5" />
+                      <div className="text-xs space-y-0.5">
+                        <p className="font-bold text-[#7c4d18]">Activer l'IA Google Gemini (100% Gratuit)</p>
+                        <p className="text-[11px] text-[#5c3e1e]">
+                          Ajoutez votre clé gratuite (ou plusieurs) pour profiter de l'analyse en direct.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowApiKeyModal(true)}
+                      className="px-2.5 py-1.5 rounded-lg bg-[#a8651e] text-white text-xs font-semibold shrink-0 hover:bg-[#8e5416] transition"
+                    >
+                      Ajouter
+                    </button>
+                  </div>
+                )}
+
                 {/* Custom Micro-Protocol Synthesizer */}
                 <div className={`rounded-2xl p-4 border ${st.card} space-y-3`}>
                   <div className="flex items-center justify-between">
@@ -1752,19 +2035,71 @@ Fais un audit de progression :
                   </button>
 
                   {aiCustomProtocolText && (
-                    <div className={`p-3.5 rounded-xl border mt-2 ${st.subCard} border-[#446857]/40 space-y-2`}>
+                    <div className={`p-3.5 rounded-xl border mt-2 ${st.subCard} border-[#446857]/40 space-y-3`}>
                       <div className="ai-content">
                         {formatMarkdown(aiCustomProtocolText)}
                       </div>
-                      <button
-                        onClick={() => {
-                          handleAddManualSession('CUSTOM_AI', customTime, null, null, null, `Protocole IA : ${customFocus}`);
-                          showToast("Séance consignée dans votre journal !");
-                        }}
-                        className={`w-full py-2 rounded-lg text-xs font-semibold transition ${st.btnSecondary}`}
-                      >
-                        + Consigner cette séance effectuée dans le Journal
-                      </button>
+
+                      {/* Interactive Session Ticket */}
+                      {generatedSessionData && (
+                        <div className="p-3 rounded-xl border border-[#446857]/30 bg-[#446857]/5 space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#446857] flex items-center gap-1">
+                              <IconCheck className="w-3.5 h-3.5" /> Ticket de Séance Généré
+                            </span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#446857]/15 text-[#446857]">
+                              {generatedSessionData.type}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs">
+                            <div className={`p-1.5 rounded-lg border ${st.card}`}>
+                              <p className="text-[9.5px] opacity-60 uppercase font-semibold">Durée</p>
+                              <p className="font-bold">{generatedSessionData.durationMin || customTime} min</p>
+                            </div>
+                            {generatedSessionData.watts ? (
+                              <div className={`p-1.5 rounded-lg border ${st.card}`}>
+                                <p className="text-[9.5px] opacity-60 uppercase font-semibold">Watts</p>
+                                <p className="font-bold text-[#446857]">{generatedSessionData.watts} W</p>
+                              </div>
+                            ) : null}
+                            {generatedSessionData.cadence ? (
+                              <div className={`p-1.5 rounded-lg border ${st.card}`}>
+                                <p className="text-[9.5px] opacity-60 uppercase font-semibold">Cadence</p>
+                                <p className="font-bold">{generatedSessionData.cadence} s/m</p>
+                              </div>
+                            ) : null}
+                            {generatedSessionData.distanceM ? (
+                              <div className={`p-1.5 rounded-lg border ${st.card}`}>
+                                <p className="text-[9.5px] opacity-60 uppercase font-semibold">Distance</p>
+                                <p className="font-bold text-cyan-800">{generatedSessionData.distanceM} m</p>
+                              </div>
+                            ) : null}
+                          </div>
+
+                          <p className={`text-[11px] italic ${st.subtext}`}>
+                            "{generatedSessionData.notes || `Protocole IA : ${customFocus}`}"
+                          </p>
+
+                          <button
+                            onClick={() => {
+                              handleAddManualSession(
+                                generatedSessionData.type || 'CONCEPT2',
+                                Number(generatedSessionData.durationMin) || customTime,
+                                generatedSessionData.watts ? Number(generatedSessionData.watts) : null,
+                                generatedSessionData.cadence ? Number(generatedSessionData.cadence) : null,
+                                generatedSessionData.distanceM ? Number(generatedSessionData.distanceM) : null,
+                                generatedSessionData.notes || `Protocole IA : ${customFocus}`
+                              );
+                              showToast("✓ Séance IA consignée dans votre Journal !");
+                              playChime(528, 'sine', 0.2);
+                            }}
+                            className={`w-full py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${st.btnPrimary}`}
+                          >
+                            <IconCheck className="w-3.5 h-3.5" /> ⚡ Valider & Enregistrer dans mon Journal
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -1797,6 +2132,26 @@ Fais un audit de progression :
                         <div className="ai-content">
                           {formatMarkdown(msg.text)}
                         </div>
+                        {msg.sessionData && (
+                          <button
+                            onClick={() => {
+                              handleAddManualSession(
+                                msg.sessionData.type || 'CONCEPT2',
+                                Number(msg.sessionData.durationMin) || 15,
+                                msg.sessionData.watts ? Number(msg.sessionData.watts) : null,
+                                msg.sessionData.cadence ? Number(msg.sessionData.cadence) : null,
+                                msg.sessionData.distanceM ? Number(msg.sessionData.distanceM) : null,
+                                msg.sessionData.notes || 'Séance suggérée par le Coach IA'
+                              );
+                              showToast("✓ Séance consignée dans votre Journal !");
+                              playChime(528, 'sine', 0.2);
+                            }}
+                            className="mt-2.5 w-full py-2 px-3 rounded-lg text-xs font-bold bg-[#446857] text-white flex items-center justify-center gap-1.5 hover:bg-[#324f42] transition shadow-sm"
+                          >
+                            <IconCheck className="w-3.5 h-3.5" />
+                            ⚡ Consigner cette séance ({msg.sessionData.durationMin || 15} min{msg.sessionData.watts ? ` • ${msg.sessionData.watts}W` : ''})
+                          </button>
+                        )}
                       </div>
                     ))}
                     {aiChatLoading && (
@@ -1885,29 +2240,29 @@ Fais un audit de progression :
                 <div className="flex p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-[#e2ded6] dark:border-zinc-800 text-xs font-medium">
                   <button
                     onClick={() => setSubTabTraining('erg')}
-                    className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${
+                    className={`flex-1 py-2 px-1 rounded-lg transition flex items-center justify-center gap-1 text-[11px] sm:text-xs ${
                       subTabTraining === 'erg' ? `${st.btnPrimary} shadow-sm font-semibold` : st.subtext
                     }`}
                   >
-                    <IconFlame className="w-3.5 h-3.5" />
-                    <span>Rameur & Tempo</span>
+                    <IconFlame className="w-3.5 h-3.5 shrink-0" />
+                    <span>Rameur</span>
                   </button>
                   <button
                     onClick={() => setSubTabTraining('core')}
-                    className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${
+                    className={`flex-1 py-2 px-1 rounded-lg transition flex items-center justify-center gap-1 text-[11px] sm:text-xs ${
                       subTabTraining === 'core' ? `${st.btnPrimary} shadow-sm font-semibold` : st.subtext
                     }`}
                   >
-                    <IconShield className="w-3.5 h-3.5" />
+                    <IconShield className="w-3.5 h-3.5 shrink-0" />
                     <span>Core (5m)</span>
                   </button>
                   <button
                     onClick={() => setSubTabTraining('load')}
-                    className={`flex-1 py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${
+                    className={`flex-1 py-2 px-1 rounded-lg transition flex items-center justify-center gap-1 text-[11px] sm:text-xs ${
                       subTabTraining === 'load' ? `${st.btnPrimary} shadow-sm font-semibold` : st.subtext
                     }`}
                   >
-                    <IconLayers className="w-3.5 h-3.5" />
+                    <IconLayers className="w-3.5 h-3.5 shrink-0" />
                     <span>12 Paliers</span>
                   </button>
                 </div>
