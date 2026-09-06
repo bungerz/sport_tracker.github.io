@@ -1,121 +1,42 @@
-# sport_tracker.github.io
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Tracker Fondations</title>
-<style>
-  body { 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-    background: #121212; 
-    color: #e0e0e0; 
-    margin: 0; 
-    padding: 20px; 
-    -webkit-tap-highlight-color: transparent;
-  }
-  h1 { font-size: 1.5rem; text-align: center; color: #fff; margin-bottom: 25px; }
-  .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-  .tab { 
-    flex: 1; padding: 12px; text-align: center; background: #2c2c2c; 
-    border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1.1rem;
-  }
-  .tab.active { background: #007bff; color: white; }
-  .exercise { 
-    display: flex; align-items: center; background: #1e1e1e; 
-    padding: 18px 15px; margin-bottom: 12px; border-radius: 8px; 
-    border-left: 4px solid #007bff; cursor: pointer; transition: 0.2s;
-  }
-  .exercise.checked { opacity: 0.5; border-left-color: #4caf50; }
-  .exercise.checked .name { text-decoration: line-through; color: #888; }
-  .details { flex: 1; margin-left: 15px; pointer-events: none; }
-  .name { font-size: 1.1rem; font-weight: bold; margin: 0; color: #fff; }
-  .reps { font-size: 0.9rem; color: #aaa; margin: 4px 0 0 0; }
-  input[type="checkbox"] { width: 24px; height: 24px; accent-color: #4caf50; pointer-events: none; }
-  button { 
-    display: block; width: 100%; padding: 15px; background: #333; 
-    color: #fff; border: none; border-radius: 8px; font-size: 1rem; 
-    font-weight: bold; cursor: pointer; margin-top: 30px;
-  }
-</style>
-</head>
-<body>
+# Health & Longevity OS
 
-  <h1>Fondations & Rameur</h1>
-  
-  <div class="tabs">
-    <div class="tab active" id="tab-A" onclick="loadWorkout('A')">A</div>
-    <div class="tab" id="tab-B" onclick="loadWorkout('B')">B</div>
-    <div class="tab" id="tab-C" onclick="loadWorkout('C')">C</div>
-  </div>
+Application web progressive (PWA) personnelle dédiée à la longévité athlétique, la santé discale (L4-L5) et l'optimisation biomécanique sur rameur Concept2, natation et montagne.
 
-  <div id="workout-container"></div>
-  <button onclick="resetWorkout()">Réinitialiser la séance</button>
+---
 
-  <script>
-    const workouts = {
-      A: [
-        { id: 'a1', name: 'Dead Bug', reps: '3 x 10' },
-        { id: 'a2', name: 'Bird-Dog', reps: '3 x 8 / côté' },
-        { id: 'a3', name: 'Pont fessier (Glute Bridge)', reps: '3 x 15' },
-        { id: 'a4', name: 'Fentes arrière', reps: '3 x 10 / jambe' },
-        { id: 'a5', name: 'Rameur', reps: '15 min continu' }
-      ],
-      B: [
-        { id: 'b1', name: 'Planche latérale', reps: '3 x 20-30s / côté' },
-        { id: 'b2', name: 'McGill Curl-up', reps: '3 x 10' },
-        { id: 'b3', name: 'Squat Bulgare', reps: '3 x 8 / jambe' },
-        { id: 'b4', name: 'Superman alterné', reps: '3 x 10' },
-        { id: 'b5', name: 'Rameur', reps: '3 x 4 min (1 min repos)' }
-      ],
-      C: [
-        { id: 'c1', name: 'Bird-Dog', reps: '2 x 10 / côté' },
-        { id: 'c2', name: 'Planche frontale', reps: '3 x 30s' },
-        { id: 'c3', name: 'Pont fessier unilatéral', reps: '3 x 8 / jambe' },
-        { id: 'c4', name: 'Fentes arrière', reps: '3 x 10 / jambe' },
-        { id: 'c5', name: 'Pompes surélevées', reps: '3 x 10' },
-        { id: 'c6', name: 'Rameur', reps: '15 min (1m @22spm, 2m @18spm)' }
-      ]
-    };
+## 🎯 Philosophie & Principes
 
-    let currentWorkout = 'A';
+* **Sécurité lombaire absolue** : Prévention des spasmes du psoas, sas de décompression bureau → sport, renforcement du transverse et des fessiers.
+* **Puissance à basse cadence (Torque)** : Travail systématique à 18–22 s/m avec un *Stroke Power Index* (SPI) élevé (≥ 5.0).
+* **Zéro friction** : Bilan en 3 taps, validation des séances en 1 clic, fonctionnement autonome et 100% hors-ligne.
 
-    function loadWorkout(type) {
-      currentWorkout = type;
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById('tab-' + type).classList.add('active');
-      render();
-    }
+---
 
-    function toggle(id) {
-      const state = localStorage.getItem(id) === 'true';
-      localStorage.setItem(id, !state);
-      render();
-    }
+## ⚡ Fonctionnalités Clés
 
-    function resetWorkout() {
-      workouts[currentWorkout].forEach(ex => localStorage.removeItem(ex.id));
-      render();
-    }
+* **Aujourd'hui** : Triage biomécanique instantané (0 ms), prescription ajustée du jour avec steppers rapides (+/- 5W, +/- 1 cad) et raccourcis 1-Tap (Piscine, Randonnée, Salle).
+* **Entraînement (Hub unifié)** :
+  * **Feuille de route 24 mois** : Progression guidée sur 12 paliers (de 100W à 180W+).
+  * **Rameur & Tempo** : Métronome immersif 1:2 (1s poussée explosive / 2s glisse lente) et calculateur de SPI.
+  * **Core Shield (5 min)** : Chronomètre guidé des 4 exercices fondamentaux (Dead Bug, Bird-Dog, Glute Bridge, Fascia plantaire).
+* **Journal de bord** : Historique multi-disciplines (Concept2, Natation, Randonnée, Salle) et audit longitudinal.
+* **Coach IA (Gemini)** : Générateur de micro-séances sur-mesure et chat clinique biomécanique.
+* **Synchronisation & Sauvegarde** :
+  * ☁️ **Drive 1-Tap** : Sauvegarde directe sur Google Drive via la Web Share API native.
+  * ⌚ **Imports Matériel** : Prise en charge des fichiers Huawei Santé (`.tcx`, `.gpx`), exports Concept2 (`.csv`) et collage de résumés texte.
+  * 🎨 **Thèmes visuels** : Épure Claire, Forêt Alpine, Graphite Mat.
 
-    function render() {
-      const container = document.getElementById('workout-container');
-      container.innerHTML = '';
-      workouts[currentWorkout].forEach(ex => {
-        const isChecked = localStorage.getItem(ex.id) === 'true';
-        container.innerHTML += `
-          <div class="exercise ${isChecked ? 'checked' : ''}" onclick="toggle('${ex.id}')">
-            <input type="checkbox" ${isChecked ? 'checked' : ''} tabindex="-1">
-            <div class="details">
-              <p class="name">${ex.name}</p>
-              <p class="reps">${ex.reps}</p>
-            </div>
-          </div>
-        `;
-      });
-    }
+---
 
-    render();
-  </script>
-</body>
-</html>
+## 📱 Installation (PWA Mobile)
+
+1. Ouvrez l'application dans votre navigateur mobile (Safari sur iOS, Chrome sur Android).
+2. Touchez **Partager** (iOS) ou le **Menu ⋮** (Android) puis sélectionnez **« Sur l'écran d'accueil »**.
+3. L'application s'exécute en plein écran avec prise en charge du mode hors-ligne.
+
+---
+
+## 🔒 Confidentialité & Sécurité
+
+* **100% Local** : Toutes les séances et constantes restent stockées dans le `localStorage` de votre appareil.
+* **Clé API Gemini** : Si renseignée, elle est conservée strictement sur votre téléphone et n'est jamais exposée ni envoyée à un serveur tiers.
