@@ -12,23 +12,27 @@ Application web progressive (PWA) personnelle dédiée à la longévité athlét
 
 ---
 
-## ⚡ Fonctionnalités Clés
+## ⚡ Architecture 3 Onglets & Ergonomie
 
-* **Aujourd'hui** : Triage biomécanique instantané (0 ms), prescription ajustée du jour avec steppers rapides (+/- 5W, +/- 1 cad) et raccourcis 1-Tap (Piscine, Randonnée, Salle).
-* **Entraînement (Hub unifié)** :
-  * **Feuille de route 24 mois** : Progression guidée sur 12 paliers (de 100W à 180W+).
-  * **Rameur & Tempo** : Métronome immersif 1:2 (1s poussée explosive / 2s glisse lente) et calculateur de SPI.
+* **1. Aujourd'hui (Centre de décision quotidien)** :
+  * Triage biomécanique instantané (0 ms) et prescription ajustée du jour avec steppers rapides (+/- 5W, +/- 1 cad).
+  * Routine **Core Shield (5 min)** : validation 1-Tap autonome ou accès direct au chronomètre guidé.
+  * **Disciplines Alternatives** : raccourcis rapides 1-Tap (750m Piscine, 1h30 Rando Zone 2, 20m Salle suspensions/dos) et tiroir unifié pour les formats personnalisés ou collés.
+* **2. Progression (Feuille de route & Outils guidés)** :
+  * **Roadmap 24 mois** : Progression guidée sur 12 paliers (de 100W à 180W+ sans dépasser 25 minutes).
   * **Core Shield (5 min)** : Chronomètre guidé des 4 exercices fondamentaux (Dead Bug, Bird-Dog, Glute Bridge, Fascia plantaire).
-* **Journal de bord** : Historique multi-disciplines (Concept2, Natation, Randonnée, Salle) et audit longitudinal.
-* **Coach IA (Gemini & Moteur Local)** :
-  * Générateur de séances sur-mesure avec **Ticket de Séance 1-Tap** intégrable directement dans le journal.
-  * Chat biomécanique interactif avec suggestions convertibles en séances.
-  * Support **multi-clés Gemini** avec testeur de connexion instantané et bascule transparente vers le moteur local autonome en cas d'absence de réseau ou de quota atteint.
-* **Notifications PWA & Rappels** : Rappels quotidiens et alerte de fin de routine Core Shield.
-* **Synchronisation & Sauvegarde** :
-  * ☁️ **Drive 1-Tap** : Sauvegarde directe sur Google Drive via la Web Share API native.
-  * ⌚ **Imports Matériel** : Prise en charge des fichiers Huawei Santé (`.tcx`, `.gpx`), exports Concept2 (`.csv`) et collage de résumés texte.
-  * 🎨 **Thèmes visuels** : Épure Claire, Forêt Alpine, Graphite Mat.
+  * **Rameur & Tempo** : Métronome immersif 1:2 (1s poussée explosive / 2s glisse) et calculateur de SPI (Stroke Power Index).
+* **3. Journal & Outils (Synthèse, Sauvegarde & Coach IA)** :
+  * **Synthèse Globale** : Compteur d'activités, palier actif et dernier SPI enregistré.
+  * **Barre d'actions 1-Tap** : Sauvegarde directe Google Drive, import Huawei/Concept2 et audit de régularité par IA.
+  * **Coach IA Biomécanique & Chat** : Échange interactif direct, suggestions convertibles en séances (Ticket 1-Tap), multi-clés Gemini gratuites et bascule autonome sur moteur biomécanique local.
+  * **Historique des Séances** : Journal chronologique complet avec badges de discipline.
+* **🔔 Rappels PWA Automatiques** :
+  * **Matin (< 8h)** : Notification pour lancer le check-in quotidien et la séance conseillée.
+  * **Soir (~ 21h)** : Rappel de bienveillance si aucune activité ni Core Shield n'ont été validés.
+* **☁️ Synchronisation & Imports** :
+  * **Drive 1-Tap** : Sauvegarde instantanée vers Google Drive sans manipulation de fichiers intermédiaires.
+  * **Imports Matériel** : Montre Huawei Santé (`.tcx`, `.gpx`), Concept2 ErgData (`.csv`) ou collage de texte partagé.
 
 ---
 
