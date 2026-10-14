@@ -172,18 +172,123 @@ ${sessionJson}
 [/SESSION_DATA]`;
       }
 
-      // 3. Historical Audit Fallback
-      if (lower.includes('audit') || lower.includes('historique')) {
-        return `### Audit de Progression Longitudinal (Moteur Local)
-* **Évolution du SPI :** Vos séances récentes montrent une excellente maîtrise du travail au couple ($SPI \\ge 5.0$). Vous transmettez l'énergie par les fessiers plutôt que par traction des bras.
-* **Gestion du Dos & Psoas :** L'alternance entre Rameur calibré, décharge en Piscine et Core Shield quotidien a permis d'endiguer les spasmes récurrents.
-* **Recommandation Tactique :** Validez encore 2 séances stables au niveau actuel avant d'augmenter la puissance de +5 Watts.`;
+      // 3. Work-Gym 35m Plan Fallback (Workout A & Workout B)
+      if (lower.includes('workout a') || lower.includes('workout b') || lower.includes('muscu') || lower.includes('salle') || lower.includes('35 min') || lower.includes('work-gym') || lower.includes('haltère') || lower.includes('pecs') || lower.includes('dos')) {
+        const isB = lower.includes('workout b') || lower.includes(' b ');
+        const sessionJson = JSON.stringify({
+          type: 'WORK_GYM',
+          durationMin: 35,
+          watts: null,
+          cadence: null,
+          distanceM: null,
+          notes: isB ? 'Workout B (35 min) : Tirage poitrine, Dév. épaules 75°, Leg curl, Presse, Suitcase carry' : 'Workout A (35 min) : Chest-Supported Row, Dév. incliné, Fentes trépied, Deadbug, Élévations'
+        }, null, 2);
+
+        if (isB) {
+          return `### Workout B (35 Mins • Salle de travail 3x/semaine)
+* **Spine-First Rule :** Zéro compression axiale verticale à 90°. Banc incliné à 75–80° pour protéger les épaules et empêcher l'hypercambrure lombaire.
+* **Exécution :** Supersets appariés 1A/1B (3x10-12, repos 45s), 2A/2B (3x10-12, repos 45s), puis exercice 3 (3x40s/main). Augmenter la charge au plafond de reps.
+
+* **1A. Lat Pulldown Machine (3 × 10–12) :** Buste incliné de max 10°. Côtes rentrées, ne pas cambrer le bas du dos en ouvrant la cage.
+* **1B. Seated Dumbbell Overhead Press (3 × 10–12) :** Banc à 75–80° (jamais 90° vertical) pour protéger les épaules et le rachis.
+* **2A. Seated Leg Curl Machine ou DB RDL (3 × 10–12) :** Renforce les ischios pour stabiliser le bassin. Si RDL, stopper dès que les hanches cessent de reculer.
+* **2B. Leg Press Machine ou DB Step-Ups (3 × 10–12) :** Sur la presse, ne jamais laisser le coccyx décoller du siège sous charge.
+* **3. Suitcase Carry (3 × 40 sec / main) :** 1 haltère lourd d'un seul côté, marche bien droite. Gainage latéral et carré des lombes.
+
+[SESSION_DATA]
+${sessionJson}
+[/SESSION_DATA]`;
+        } else {
+          return `### Workout A (35 Mins • Salle de travail 3x/semaine)
+* **Spine-First Rule :** Zéro rowing buste penché non soutenu ni tassement vertébral lourd. Utilisation du banc incliné (30–45°) pour plaquer le buste et éliminer toute contrainte sur L4-L5.
+* **Exécution :** Supersets appariés 1A/1B (3x10-12, repos 45s), 2A/2B (3x8-10 / jambe & 3x8/côté, repos 45s), puis exercice 3 (3x12-15).
+
+* **1A. Chest-Supported Dumbbell Row (3 × 10–12) :** Banc à 30–45°, couché à plat ventre. Coudes vers les hanches, zéro charge sur les lombaires.
+* **1B. Incline Dumbbell Bench Press (3 × 10–12) :** Banc à 30°. Bas du dos plaqué contre le dossier (pieds sur le bord du banc si le dos cambre).
+* **2A. Bulgarian Split Squat ou Goblet Squat (3 × 8–10 / jambe) :** Appui Trépied (gros orteil, petit orteil, talon) pour redresser la voûte plantaire, anti-valgus genou.
+* **2B. Deadbug au sol (3 × 8 / côté) :** Écraser les lombaires dans le sol. Réduire l'amplitude si le dos décolle.
+* **3. Dumbbell Lateral Raise (3 × 12–15) :** Assis banc redressé. Élargit la carrure d'épaules pour bâtir le V-taper.
+
+[SESSION_DATA]
+${sessionJson}
+[/SESSION_DATA]`;
+        }
       }
 
-      return `Voici mon conseil biomécanique personnalisé pour votre profil (187 cm, santé lombaire L4-L5) :
-* **Priorité actuelle :** Préserver la charnière de hanche (pivot 11h-1h) et maintenir une cadence basse (18-20 s/m) avec une propulsion fessière explosive.
-* **Règle d'or :** Si le psoas tire, passez en mode décompression (piscine ou Core Shield) plutôt que de forcer.
-* **Minéraux :** N'oubliez pas votre apport régulier en magnésium bisglycinate et en eau salée pour prévenir la tétanie musculaire.`;
+      // 4. Rowing 100W Pain / Stop 4x4 / Concept2 Rebuild Fix
+      if (lower.includes('100w') || (lower.includes('rameur') && (lower.includes('mal') || lower.includes('douleur') || lower.includes('4x4') || lower.includes('pourquoi')))) {
+        const sessionJson = JSON.stringify({
+          type: 'CONCEPT2',
+          durationMin: 15,
+          watts: 130,
+          cadence: 23,
+          distanceM: null,
+          notes: 'Finisher Concept2 Rebuild : 10 x (1m ON @ 130W / 1m OFF) - Damper 3-4'
+        }, null, 2);
+
+        return `### Diagnostic Biomécanique : Pourquoi le Rameur fait mal à 100W
+* **La cause mécanique :** 100W à 20 s/m (~2:32/500m) est une charge mécanique très basse. Si votre dos tire à 100W :
+  1. Vous compensez la faiblesse des fessiers/ischios en pliant la colonne lombaire au lieu d'articuler aux hanches.
+  2. Vous vous tractez vers l'avant à la glisse avec vos fléchisseurs de hanche (psoas), qui tirent directement sur le rachis L4-L5.
+* **Le piège du protocole 4x4 min :** Conçu pour la VO2max, votre bas du dos sature bien avant d'avoir pu stimuler le système aérobie.
+* **Protocole Correctif Immédiat (Finisher 10-15 min) :**
+  1. **Damper à 3 ou 4** (Drag Factor 110–115 sur PM5). Ne ramez jamais avec un damper plus lourd.
+  2. **3 min « Feet Out »** : Ramez pieds non sanglés à l'échauffement (active la sangle abdominale profonde et neutralise le psoas).
+  3. **10 × (1 min ON / 1 min OFF)** : 1 min à 22–24 s/m (120–140W, dos rigide) puis 1 min de repos complet pour réinitialiser la colonne vertébrale.
+  4. **Règle de charnière 11h** : Assis sur l'avant des ischions, buste verrouillé à 11h avant que les genoux ne plient au retour.
+
+[SESSION_DATA]
+${sessionJson}
+[/SESSION_DATA]`;
+      }
+
+      // 5. Daily 4-Min Evening Floor Routine
+      if (lower.includes('routine sol') || lower.includes('floor') || lower.includes('soir') || (lower.includes('gainage') && lower.includes('genoux')) || lower.includes('bridge')) {
+        const sessionJson = JSON.stringify({
+          type: 'CORE_SHIELD',
+          durationMin: 4,
+          watts: null,
+          cadence: null,
+          distanceM: null,
+          notes: 'Routine Sol Soir (4 min) : Pont fessier, Bird-Dog, Gainage latéral genoux'
+        }, null, 2);
+
+        return `### Routine Sol Quotidienne Soir (4 min • Décompression au sol)
+*À faire chaque soir sur le tapis (sans aucun crunch ni sit-up qui cisaillent les disques vertébraux).*
+
+1. **Pont Fessier (2 × 12 reps avec 3 sec de maintien au sommet) :** Serrer les fessiers à bloc en haut, côtes rentrées. Réveille les fessiers dormants.
+2. **Bird-Dog (2 × 6 reps / côté avec 5 sec de maintien) :** À 4 pattes, tendre simultanément bras et jambe opposés sans cambrer ni vriller le bassin.
+3. **Gainage Latéral sur Genoux (2 × 30 sec / côté) :** Construit la stabilité latérale (carré des lombes / obliques) avec zéro contrainte de cisaillement sur L4-L5.
+
+[SESSION_DATA]
+${sessionJson}
+[/SESSION_DATA]`;
+      }
+
+      // 6. Nutrition & Body Recomposition Overhaul
+      if (lower.includes('nutrition') || lower.includes('protéine') || lower.includes('déficit') || lower.includes('calorie') || lower.includes('gras') || lower.includes('kilo')) {
+        return `### Contrainte « Overhaul » & Stratégie Nutrition
+* **Constat sans appel :** Avec un emploi du temps saturé, impossible d'éliminer le gras abdominal uniquement sur un rameur.
+* **Stratégie de Recomposition Corporelle :**
+  1. **Musculation (3x / semaine, 35 min) :** Workout A et B pour élargir le haut du dos et les épaules (V-taper) et corriger la posture.
+  2. **Déficit Calorique Modéré :** Déficit quotidien de **300 à 500 kcal** pour cibler le tissu adipeux viscéral sans fatigue nerveuse.
+  3. **Protéines Cibles :** **1,6 g de protéines par kg de poids corporel** (soit environ 140 g/jour pour 88 kg) pour préserver et bâtir la masse musculaire.`;
+      }
+
+      // 7. Historical Audit Fallback
+      if (lower.includes('audit') || lower.includes('historique') || lower.includes('posture') || lower.includes('pied plat') || lower.includes('voûte')) {
+        return `### Audit Biomécanique & Réalité Clinique (Moteur Local)
+* **Posture & Silhouette :** Profil typique assis au bureau. Épaules enroulées en avant (protraction) et bascule antérieure du bassin (anterior pelvic tilt) poussant l'abdomen vers l'avant et concentrant le stress mécanique sur les lombaires L4-L5. Faible masse musculaire au haut du corps relative au stockage adipeux du tronc.
+* **Chaîne Cinétique Inférieure :** Faible volume fessiers/quadriceps et affaissement de la voûte plantaire médiale (pied plat pronateur) sur le pied droit. Entraîne une rotation interne du tibia et du fémur, forçant la bascule antérieure du bassin.
+* **Règle Spine-First :** Proscrire les rowings penchés libres et les compressions axiales. Travail sur banc incliné (30° et 75°).
+* **Objectif :** Workout A/B en supersets 35m + Concept2 Finisher 10x1m + 1,6g/kg protéines.`;
+      }
+
+      return `Voici mon conseil biomécanique personnalisé pour votre profil (187 cm, santé lombaire L4-L5, pieds plats) :
+* **Priorité actuelle :** Suivre le programme 35 min (Workout A & B en alternance) avec règle Spine-First absolue.
+* **Rameur :** Remplacer les 4x4 min par le Finisher 10 × (1m ON / 1m OFF) à damper 3-4 pour protéger la charnière lombaire.
+* **Nutrition :** Maintenir un apport de 1,6 g de protéines / kg de poids de corps avec un déficit de 300–500 kcal/jour.
+* **Soir :** 4 minutes de routine au sol (pont fessier, bird-dog, gainage genoux) pour verrouiller le bassin avant la nuit.`;
     };
 
     const fetchWithRetry = async (url, options, maxRetries = 2) => {
@@ -312,13 +417,226 @@ ${sessionJson}
     const IconVolumeOff = ({ className }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/><path strokeLinecap="round" strokeLinejoin="round" d="M17 14l4-4m0 4l-4-4"/></svg>;
     const IconBell = ({ className }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>;
 
+    // --- WORKOUT PLAN & BIOMECHANICAL PROGRAM CONSTANTS ---
+    const WORKOUT_A = {
+      id: 'workout_a',
+      title: 'Workout A (35 Mins)',
+      subtitle: 'Supersets Dos/Pecs & Fentes Trépied (3x / semaine)',
+      spineRule: 'Spine-First Rule : Zéro rowing buste penché non soutenu ou tassement vertébral lourd. Utilisation du banc incliné (30–45°) pour plaquer le buste et supprimer toute charge sur les lombaires L4-L5.',
+      executionRule: 'Exécution en supersets : Réaliser 1A, reposer 45s, réaliser 1B, reposer 45s, et répéter jusqu’à compléter les 3 séries. Ajouter du poids dès que le haut de la fourchette de répétitions est validé.',
+      exercises: [
+        {
+          group: '1A',
+          name: 'Chest-Supported Dumbbell Row',
+          setsReps: '3 × 10–12 reps',
+          rest: 'Repos 45 sec',
+          paired: '1B',
+          purpose: 'Construit le haut du dos et les lats avec ZÉRO charge sur les lombaires.',
+          cue: 'Régler le banc à 30–45°. Couché à plat ventre sur le banc. Tirer les coudes vers les hanches en resserrant les omoplates.'
+        },
+        {
+          group: '1B',
+          name: 'Incline Dumbbell Bench Press',
+          setsReps: '3 × 10–12 reps',
+          rest: 'Repos 45 sec',
+          paired: '1A',
+          purpose: 'Développement de la chaîne antérieure sans cambrure lombaire.',
+          cue: 'Régler le banc à 30°. Garder le bas du dos bien plaqué contre le dossier (poser les pieds sur le bord du banc si le dos se cambre).'
+        },
+        {
+          group: '2A',
+          name: 'Bulgarian Split Squat (ou Goblet Squat)',
+          setsReps: '3 × 8–10 reps / jambe',
+          rest: 'Repos 45 sec',
+          paired: '2B',
+          purpose: 'Force unilatérale, réveil fessier et correction de la voûte plantaire.',
+          cue: 'Repère Trépied du pied : Presser activement le gros orteil, le petit orteil et le talon dans le sol pour recréer l’arche. Empêcher le genou de rentrer (anti-valgus).'
+        },
+        {
+          group: '2B',
+          name: 'Deadbug (Au Sol)',
+          setsReps: '3 × 8 reps / côté',
+          rest: 'Repos 45 sec',
+          paired: '2A',
+          purpose: 'Gainage anti-extension lombo-pelvien profond.',
+          cue: 'Écraser les lombaires fermement dans le sol. Si le bas du dos décolle du sol quand la jambe se tend, raccourcir immédiatement l’amplitude.'
+        },
+        {
+          group: '3',
+          name: 'Dumbbell Lateral Raise',
+          setsReps: '3 × 12–15 reps',
+          rest: 'Repos 45 sec',
+          purpose: 'Élargit la carrure d’épaules pour bâtir le V-taper face à la taille.',
+          cue: 'Assis sur le banc redressé. Lever les haltères dans le plan scapulaire (légèrement vers l’avant) sans hausser les trapèzes.'
+        }
+      ]
+    };
+
+    const WORKOUT_B = {
+      id: 'workout_b',
+      title: 'Workout B (35 Mins)',
+      subtitle: 'Supersets Tirage Vertical/Épaules 75° & Ischios (3x / semaine)',
+      spineRule: 'Spine-First Rule : Zéro compression axiale verticale à 90°. Banc incliné à 75–80° pour protéger les articulations de l’épaule et empêcher l’hypercambrure lombaire.',
+      executionRule: 'Exécution en supersets : Réaliser 1A, reposer 45s, réaliser 1B, reposer 45s, et répéter jusqu’à compléter les 3 séries. Monter la charge dès que le plafond de répétitions est atteint.',
+      exercises: [
+        {
+          group: '1A',
+          name: 'Lat Pulldown Machine (Tirage Poitrine)',
+          setsReps: '3 × 10–12 reps',
+          rest: 'Repos 45 sec',
+          paired: '1B',
+          purpose: 'Développement de la largeur du dos sans cisaillement lombaire.',
+          cue: 'Inclinaison du buste en arrière de 10° maximum. Garder les côtes rentrées et gainées (ne pas cambrer les lombaires en ouvrant la cage).'
+        },
+        {
+          group: '1B',
+          name: 'Seated Dumbbell Overhead Press',
+          setsReps: '3 × 10–12 reps',
+          rest: 'Repos 45 sec',
+          paired: '1A',
+          purpose: 'Force des deltoïdes avec protection stricte du rachis.',
+          cue: 'Régler le banc à 75–80° (légèrement incliné, jamais à 90° vertical) pour protéger les épaules et neutraliser la cambrure.'
+        },
+        {
+          group: '2A',
+          name: 'Seated Leg Curl Machine (ou DB Romanian Deadlift)',
+          setsReps: '3 × 10–12 reps',
+          rest: 'Repos 45 sec',
+          paired: '2B',
+          purpose: 'Renforce les ischios pour stabiliser le bassin et neutraliser la bascule antérieure.',
+          cue: 'Si DB RDL : stopper la descente dès que les hanches cessent de reculer vers l’arrière (ne jamais compenser avec la colonne).'
+        },
+        {
+          group: '2B',
+          name: 'Leg Press Machine (ou DB Step-Ups)',
+          setsReps: '3 × 10–12 reps',
+          rest: 'Repos 45 sec',
+          paired: '2A',
+          purpose: 'Volume fessiers/quadriceps en décharge vertébrale.',
+          cue: 'Sur la presse, ne jamais descendre le chariot si bas que le sacrum/coccyx se décolle du dossier (flexion lombaire sous charge proscrite).'
+        },
+        {
+          group: '3',
+          name: 'Suitcase Carry (Marche Valise Unilatérale)',
+          setsReps: '3 × 40 sec / main',
+          rest: 'Repos 45 sec',
+          purpose: 'Force le carré des lombes et les obliques à stabiliser la colonne vertébrale.',
+          cue: 'Tenir un seul haltère lourd d’une main comme une valise et marcher droit (ou faire du sur-place). Épaules et bassin strictement horizontaux.'
+        }
+      ]
+    };
+
+    const CONCEPT2_FIX = {
+      title: 'Concept2 Rebuild Finisher (10–15 Mins)',
+      subtitle: 'Remplacement immédiat des 4x4 min continus',
+      rationale: 'À 100W, votre bas du dos sature avant que votre système cardiovasculaire ne reçoive un vrai stimulus. Remplacement par des fractions courtes 1m/1m pour réinitialiser la colonne.',
+      damper: 'Damper 3 ou 4 (Drag Factor 110–115 sur PM5 via More Options -> Display Drag Factor)',
+      warmup: '3 minutes « Feet Out » : Ramer sans sangler les pieds (force le transverse et rend impossible la traction au psoas)',
+      protocol: '10 × (1 min EFFORT @ 22–24 s/m [120–140W] / 1 min REPOS COMPLET)',
+      hingeRule: 'La règle de charnière : Assis sur l’avant des ischions. Buste verrouillé à 11h avant que les genoux ne plient au retour, spine locked jusqu’à 80% de poussée des jambes.'
+    };
+
+    const FLOOR_ROUTINE = {
+      title: 'Routine Sol Quotidienne Soir (4 Mins)',
+      subtitle: 'Décompression et renforcement discal le soir en famille',
+      rationale: 'À faire chaque soir sur le tapis. Proscrire les sit-ups et crunches qui fléchissent les disques lombaires L4-L5.',
+      exercises: [
+        {
+          id: 'bridge',
+          name: '1. Pont Fessier (Glute Bridge)',
+          prescription: '2 séries × 12 reps avec 3 sec de maintien au sommet',
+          holdSec: 3,
+          reps: 12,
+          sets: 2,
+          target: 'Réveil des fessiers inhibés',
+          cue: 'Serrer très fort les fessiers en haut tout en gardant les côtes rentrées. Réveille les fessiers dormants pour que le bas du dos cesse de compenser.'
+        },
+        {
+          id: 'birddog',
+          name: '2. Bird-Dog',
+          prescription: '2 séries × 6 reps / côté avec 5 sec de maintien',
+          holdSec: 5,
+          reps: 6,
+          sets: 2,
+          target: 'Stabilité anti-rotation & multifides',
+          cue: 'À 4 pattes, tendre simultanément bras et jambe opposés à l’horizontale. Ne pas laisser le bas du dos creuser ni le bassin vriller.'
+        },
+        {
+          id: 'sideplank',
+          name: '3. Gainage Latéral sur Genoux (Side Plank from Knees)',
+          prescription: '2 séries × 30 sec par côté',
+          durationSec: 30,
+          sets: 2,
+          target: 'Stabilité spinale latérale',
+          cue: 'En appui sur le coude et les genoux fléchis. Construit la stabilité latérale avec un cisaillement minimal sur les disques vertébraux L4-L5.'
+        }
+      ]
+    };
+
+    const BIOMECHANICAL_AUDIT = {
+      title: 'Audit Biomécanique & Réalité Clinique',
+      items: [
+        {
+          title: 'Posture & Silhouette',
+          subtitle: 'Desk-Posture & Bascule Antérieure',
+          desc: 'Profil de bureau classique : épaules enroulées en avant (protraction) et bascule antérieure du bassin (anterior pelvic tilt) poussant l’abdomen vers l’avant et concentrant le stress mécanique sur le rachis lombaire L4-L5 (visible aux plis cutanés). Masse musculaire du haut du corps (pectoraux, deltoïdes, dorsaux) faible par rapport au stockage adipeux abdominal.'
+        },
+        {
+          title: 'Chaîne Cinétique Inférieure',
+          subtitle: 'Affaissement de la Voûte & Pronation',
+          desc: 'Faible volume des quadriceps et des fessiers, couplé à un affaissement visible de la voûte plantaire médiale (pronation / pied plat) sur le pied droit. L’effondrement de la voûte entraîne la rotation interne du tibia et du fémur, qui force la bascule antérieure du bassin et surcharge les lombaires.'
+        },
+        {
+          title: 'Pourquoi le Rameur fait mal à 100W',
+          subtitle: 'Charnière Lombaire & Traction au Psoas',
+          desc: '100W à 20 s/m (~2:32/500m) est une charge mécanique très basse. Si votre dos fait mal à 100W : 1) Vous compensez la faiblesse fessiers/ischios en pliant la colonne lombaire au lieu d’articuler aux hanches. 2) Vous vous tractez vers l’avant à la glisse avec vos fléchisseurs de hanche (psoas), qui tirent directement sur le bas du dos. De plus, le 4x4 min est calibré pour la VO2max : le bas du dos sature bien avant le système cardiovasculaire.'
+        },
+        {
+          title: 'La Contrainte « Overhaul » & Nutrition',
+          subtitle: 'Recomposition Corporelle & 1,6g/kg Protéines',
+          desc: 'Avec un temps libre limité, impossible d’éliminer la masse grasse abdominale uniquement sur un rameur. Une recomposition physique complète exige de séparer les objectifs : Musculation (3x/semaine, 35 min) pour élargir le haut du dos/épaules et redresser la posture, et Nutrition calibrée : déficit quotidien de 300 à 500 kcal avec 1,6 g de protéines par kg de poids corporel pour cibler la perte adipeuse tout en construisant du muscle.'
+        }
+      ]
+    };
+
     function App() {
       const [activeTab, setActiveTab] = useState('today'); // 'today', 'training', 'history'
       const [theme, setTheme] = useState('epure');
       const [soundEnabled, setSoundEnabled] = useState(true);
       const [notificationsEnabled, setNotificationsEnabled] = useState(false);
       const [showSettingsModal, setShowSettingsModal] = useState(false);
-      const [subTabTraining, setSubTabTraining] = useState('erg'); // 'erg', 'core', 'load'
+      const [subTabTraining, setSubTabTraining] = useState('gym'); // 'gym', 'erg', 'core', 'audit', 'load'
+
+      // Overhaul Program State
+      const [nextGymWorkout, setNextGymWorkout] = useState('A'); // 'A' or 'B'
+      const [gymWorkoutActiveTab, setGymWorkoutActiveTab] = useState('A');
+      const [prescribedRowMode, setPrescribedRowMode] = useState('rebuild'); // 'rebuild' or 'classic'
+      const [userBodyweight, setUserBodyweight] = useState(88); // kg
+      const [floorCompletedToday, setFloorCompletedToday] = useState(false);
+
+      // Guided Gym Workout Runner State
+      const [showGymRunnerModal, setShowGymRunnerModal] = useState(false);
+      const [gymRunnerWorkout, setGymRunnerWorkout] = useState('A');
+      const [gymRunnerExerciseIndex, setGymRunnerExerciseIndex] = useState(0);
+      const [gymRunnerSetIndex, setGymRunnerSetIndex] = useState(1);
+      const [gymRestSeconds, setGymRestSeconds] = useState(45);
+      const [isGymRestRunning, setIsGymRestRunning] = useState(false);
+
+      // Guided Concept2 Rebuild Interval Runner State
+      const [showConcept2FixModal, setShowConcept2FixModal] = useState(false);
+      const [c2IntervalRound, setC2IntervalRound] = useState(1);
+      const [c2IntervalPhase, setC2IntervalPhase] = useState('warmup'); // 'warmup', 'work', 'rest', 'done'
+      const [c2TimerSeconds, setC2TimerSeconds] = useState(180); // 3 min warmup
+      const [isC2TimerRunning, setIsC2TimerRunning] = useState(false);
+
+      // Guided Floor Routine Runner State
+      const [showFloorRoutineModal, setShowFloorRoutineModal] = useState(false);
+      const [floorExerciseIndex, setFloorExerciseIndex] = useState(0);
+      const [floorTimerSeconds, setFloorTimerSeconds] = useState(36);
+      const [isFloorTimerRunning, setIsFloorTimerRunning] = useState(false);
+
+      // Full Biomechanical Audit Modal State
+      const [showAuditModal, setShowAuditModal] = useState(false);
 
       // Gemini API Key User Config & Testing
       const [geminiApiKey, setGeminiApiKey] = useState('');
@@ -437,9 +755,17 @@ ${sessionJson}
           if (savedNotif === 'true' && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             setNotificationsEnabled(true);
           }
-          const savedCoreDate = localStorage.getItem('health_os_core_date_v10');
           const todayStr = new Date().toISOString().split('T')[0];
+          const savedCoreDate = localStorage.getItem('health_os_core_date_v10');
           if (savedCoreDate === todayStr) setCoreCompletedToday(true);
+          const savedFloorDate = localStorage.getItem('health_os_floor_date_v10');
+          if (savedFloorDate === todayStr) setFloorCompletedToday(true);
+          const savedNextGym = localStorage.getItem('health_os_next_gym');
+          if (savedNextGym === 'A' || savedNextGym === 'B') setNextGymWorkout(savedNextGym);
+          const savedRowMode = localStorage.getItem('health_os_row_mode');
+          if (savedRowMode) setPrescribedRowMode(savedRowMode);
+          const savedWeight = localStorage.getItem('health_os_bodyweight');
+          if (savedWeight) setUserBodyweight(Number(savedWeight));
         } catch (e) {}
       }, []);
 
@@ -449,9 +775,84 @@ ${sessionJson}
           localStorage.setItem('health_os_level_v10', currentLevel.toString());
           localStorage.setItem('health_os_theme_v10', theme);
           localStorage.setItem('health_os_sound_v10', soundEnabled.toString());
+          localStorage.setItem('health_os_next_gym', nextGymWorkout);
+          localStorage.setItem('health_os_row_mode', prescribedRowMode);
+          localStorage.setItem('health_os_bodyweight', userBodyweight.toString());
           window.__soundEnabled = soundEnabled;
         } catch (e) {}
-      }, [workouts, currentLevel, theme, soundEnabled]);
+      }, [workouts, currentLevel, theme, soundEnabled, nextGymWorkout, prescribedRowMode, userBodyweight]);
+
+      // Gym Rest Timer Effect (45s rest between supersets)
+      useEffect(() => {
+        let interval = null;
+        if (isGymRestRunning && gymRestSeconds > 0) {
+          interval = setInterval(() => setGymRestSeconds(s => s - 1), 1000);
+        } else if (isGymRestRunning && gymRestSeconds === 0) {
+          setIsGymRestRunning(false);
+          playChime(660, 'sine', 0.4);
+          showToast("Repos 45s terminé ! Prêt pour la série suivante.");
+        }
+        return () => clearInterval(interval);
+      }, [isGymRestRunning, gymRestSeconds]);
+
+      // Concept2 Rebuild 10x (1m ON / 1m OFF) Interval Timer Effect
+      useEffect(() => {
+        let interval = null;
+        if (isC2TimerRunning && c2TimerSeconds > 0) {
+          interval = setInterval(() => setC2TimerSeconds(s => s - 1), 1000);
+        } else if (isC2TimerRunning && c2TimerSeconds === 0) {
+          if (c2IntervalPhase === 'warmup') {
+            setC2IntervalPhase('work');
+            setC2TimerSeconds(60);
+            setC2IntervalRound(1);
+            playChime(880, 'sine', 0.3);
+            showToast("Tour 1/10 : EFFORT 1 min @ 22-24 s/m (120-140W) !");
+          } else if (c2IntervalPhase === 'work') {
+            setC2IntervalPhase('rest');
+            setC2TimerSeconds(60);
+            playChime(440, 'sine', 0.4);
+            showToast("Repos 1 min : relâchez le dos et réinitialisez la colonne.");
+          } else if (c2IntervalPhase === 'rest') {
+            if (c2IntervalRound < 10) {
+              const nextRound = c2IntervalRound + 1;
+              setC2IntervalRound(nextRound);
+              setC2IntervalPhase('work');
+              setC2TimerSeconds(60);
+              playChime(880, 'sine', 0.3);
+              showToast(`Tour ${nextRound}/10 : EFFORT 1 min !`);
+            } else {
+              setC2IntervalPhase('done');
+              setIsC2TimerRunning(false);
+              playChime(660, 'sine', 0.5);
+              showToast("Finisher Concept2 terminé ! 10 tours complétés avec succès ✓");
+            }
+          }
+        }
+        return () => clearInterval(interval);
+      }, [isC2TimerRunning, c2TimerSeconds, c2IntervalPhase, c2IntervalRound]);
+
+      // Floor Routine Timer Effect (4 min)
+      useEffect(() => {
+        let interval = null;
+        if (isFloorTimerRunning && floorTimerSeconds > 0) {
+          interval = setInterval(() => setFloorTimerSeconds(s => s - 1), 1000);
+        } else if (isFloorTimerRunning && floorTimerSeconds === 0) {
+          playChime(660, 'sine', 0.35);
+          if (floorExerciseIndex < FLOOR_ROUTINE.exercises.length - 1) {
+            const nextIdx = floorExerciseIndex + 1;
+            setFloorExerciseIndex(nextIdx);
+            setFloorTimerSeconds(FLOOR_ROUTINE.exercises[nextIdx].holdSec ? 45 : 30);
+          } else {
+            setIsFloorTimerRunning(false);
+            setFloorCompletedToday(true);
+            const todayStr = new Date().toISOString().split('T')[0];
+            localStorage.setItem('health_os_floor_date_v10', todayStr);
+            handleAddManualSession('CORE_SHIELD', 4, null, null, null, 'Routine Sol Soir (4 min) : Pont fessier, Bird-Dog, Gainage latéral');
+            showToast("✓ Routine Sol 4 min validée ! Votre colonne est décomprimée.");
+          }
+        }
+        return () => clearInterval(interval);
+      }, [isFloorTimerRunning, floorTimerSeconds, floorExerciseIndex]);
 
       const coreExercises = [
         { name: "1. Dead Bug (Anti-Extension)", target: "Stabilisateurs profonds & transverse", cue: "Plaquez le bas du dos au sol. Tendez bras droit + jambe gauche sans cambrer.", duration: 45, reps: "3 x 8 reps lentes" },
@@ -487,6 +888,34 @@ ${sessionJson}
         }
         return () => clearInterval(interval);
       }, [isCoreRunning, coreTimerSeconds, corePhaseIndex, notificationsEnabled]);
+
+      const handleQuickValidateGym = (workoutType = nextGymWorkout) => {
+        const isB = workoutType === 'B';
+        const notes = isB
+          ? 'Workout B (35 min) : Tirage poitrine, Dév. épaules 75°, Leg curl, Presse, Suitcase carry'
+          : 'Workout A (35 min) : Chest-Supported Row, Dév. incliné, Fentes trépied, Deadbug, Élévations';
+        handleAddManualSession('WORK_GYM', 35, null, null, null, notes);
+        const next = isB ? 'A' : 'B';
+        setNextGymWorkout(next);
+        localStorage.setItem('health_os_next_gym', next);
+        playChime(528, 'sine', 0.3);
+        showToast(`✓ ${isB ? 'Workout B' : 'Workout A'} validé ! Prochaine séance : Workout ${next}`);
+      };
+
+      const handleQuickValidateConcept2Fix = () => {
+        handleAddManualSession('CONCEPT2', 15, 130, 23, null, 'Finisher Concept2 Rebuild : 10 x (1m ON @ 130W / 1m OFF) - Damper 3-4');
+        playChime(528, 'sine', 0.3);
+        showToast("✓ Finisher Concept2 (10x1m • 130W) consigné dans votre journal !");
+      };
+
+      const handleQuickValidateFloorRoutine = () => {
+        setFloorCompletedToday(true);
+        const todayStr = new Date().toISOString().split('T')[0];
+        localStorage.setItem('health_os_floor_date_v10', todayStr);
+        handleAddManualSession('CORE_SHIELD', 4, null, null, null, 'Routine Sol Soir (4 min) : Pont fessier, Bird-Dog, Gainage latéral');
+        playChime(660, 'sine', 0.3);
+        showToast("✓ Routine Sol 4 min validée ! Vos disques sont stabilisés.");
+      };
 
       useEffect(() => {
         let timer = null;
@@ -638,24 +1067,29 @@ ${sessionJson}
         setAiTriageResponse(null);
 
         const systemInstruction = `Tu es le préparateur physique expert en biomécanique et longévité de l'utilisateur. 
-Profil de l'utilisateur : Homme de 36 ans, taille 187 cm (longs segments), poids ~87-90 kg, profil puissance (torque).
-Antécédents : Spasmes récurrents du psoas droit et fragilité lombaire L4-L5 suite à une posture assise prolongée au bureau, affaissement de voûte plantaire (pieds plats avec tendance au valgus des genoux).
-Philosophie : Sport-santé à l'européenne, sécurité discale absolue, séances courtes (max 25 min), travail à basse cadence (18-22 s/m) avec SPI élevé (>= 5.0), pas d'épuisement nerveux.
+Profil de l'utilisateur : Homme de 36 ans, taille 187 cm (longs segments), poids ~88 kg, profil puissance (torque).
+Audit Biomécanique :
+* Posture bureau : épaules enroulées en avant (protraction), bascule antérieure du bassin (anterior pelvic tilt) concentrant les contraintes sur L4-L5. Faible masse musculaire au haut du corps vs tissu adipeux abdominal.
+* Chaîne inférieure : affaissement de voûte plantaire médiale droite (pronation/pied plat) entraînant une rotation interne tibia/fémur et surchargeant les lombaires.
+* Rameur : stop aux 4x4 min continus à 100W (charnière lombaire et traction au psoas). Remplacement par le Finisher 10 × (1m ON @ 120-140W / 1m OFF), Damper 3-4, échauffement Feet Out.
+* Programme en cours : Musculation 35 min (Workout A & B en alternance 3x/semaine, supersets 45s de repos, règle Spine-First avec banc incliné).
+* Routine Soir : 4 min au sol (Pont fessier 3s hold, Bird-Dog 5s hold, Gainage genoux 30s).
+* Nutrition : Déficit de 300-500 kcal/j, 1,6 g de protéines/kg (~140 g/j).
 Tu dois répondre en français de manière concise, structurée (Markdown avec listes à puces et gras) et clinique.`;
 
         const prompt = `Voici mes constantes du jour :
 * Tension Psoas / Aine : ${psoasTension} / 5 (0 = libre, 5 = spasme)
 * Confort Lombaire : ${lumbarComfort} / 5 (1 = fragile, 5 = solide)
 * Électrolytes / Eau salée / Magnésium pris aujourd'hui : ${electrolytesTaken ? 'OUI' : 'NON'}
-* Palier de charge actuel : Niveau ${currentLevel} sur 12 (${activeLevelData.title}, Cible : ${activeLevelData.targetWatts} @ ${activeLevelData.cadence}, repos ${activeLevelData.rest})
+* Programme en cours : Prochaine séance Muscu : Workout ${nextGymWorkout} (35 min) | Mode Rameur : ${prescribedRowMode === 'rebuild' ? 'Rebuild 10x 1m/1m' : `Niveau ${currentLevel} 4x4 min`}
 * Dernières séances enregistrées : ${JSON.stringify(workouts.slice(0, 3))}
 
 Fais un triage direct en 3 points :
 1. Statut & Triage Biomécanique (Feu vert, orange ou alerte délestage).
-2. Prescription Ajustée du Jour (Watts, cadence, format ou substitution par piscine/mobilité).
-3. Consigne Minérale & Posturale (réglage cale-pieds trous 2-3, anti-valgus, hook grip, sas bureau).`;
+2. Prescription Ajustée du Jour (Option Workout ${nextGymWorkout} 35m, ou Finisher Rameur 10x1m, ou décompression piscine).
+3. Consigne Minérale, Posturale & Nutritionnelle (banc incliné, voûte trépied, 1,6g/kg protéines, 4 min sol ce soir).`;
 
-        const userContext = { psoasTension, lumbarComfort, electrolytesTaken, currentLevel, levelData: activeLevelData };
+        const userContext = { psoasTension, lumbarComfort, electrolytesTaken, currentLevel, levelData: activeLevelData, nextGymWorkout, prescribedRowMode };
         const result = await callGemini(prompt, systemInstruction, userContext, geminiApiKey);
         setAiTriageResponse(result);
         setAiTriageLoading(false);
@@ -668,12 +1102,18 @@ Fais un triage direct en 3 points :
         setAiChatMessages(prev => [...prev, { role: 'user', text: userMsg }]);
         setAiChatLoading(true);
 
-        const systemInstruction = `Tu es l'assistant personnel et coach expert de longévité et biomécanique pour un chercheur de 36 ans (187 cm, santé lombaire L4-L5, pieds plats, Concept2, natation décompression, randonnée Zone 2).
+        const systemInstruction = `Tu es l'assistant personnel et coach expert de longévité et biomécanique pour un chercheur de 36 ans (187 cm, santé lombaire L4-L5, pieds plats avec affaissement droit, 88 kg).
+Tu connais parfaitement son audit :
+- Posture de bureau avec protraction des épaules et bascule antérieure du bassin.
+- Douleur de rameur à 100W due au fléchissement lombaire et traction psoas ; remplacement des 4x4 min par le Finisher 10x (1m ON / 1m OFF) @ 120-140W, damper 3-4, feet out.
+- Programme Muscu 35 min (Workout A & Workout B supersets 45s repos, règle Spine-First sur banc incliné 30° et 75°).
+- Routine Sol 4 min le soir (pont fessier 3s hold, bird-dog 5s hold, gainage genoux 30s).
+- Nutrition Overhaul : déficit 300-500 kcal/j avec 1,6g/kg de protéines (~140g/j).
 Sois pragmatique, concis, direct, encourageant et protecteur du bas du dos et du psoas. Réponds en français avec du formatage Markdown clair.
 Si tu proposes une séance d'entraînement concrète dans ta réponse, ajoute à la toute fin ce bloc exact afin que l'utilisateur puisse la consigner directement en 1 clic :
 [SESSION_DATA]
 {
-  "type": "CONCEPT2" ou "SWIM" ou "CORE_SHIELD" ou "HIKE" ou "WORK_GYM",
+  "type": "WORK_GYM" ou "CONCEPT2" ou "SWIM" ou "CORE_SHIELD" ou "HIKE",
   "durationMin": nombre de minutes,
   "watts": nombre de watts ou null,
   "cadence": cadence s/m ou null,
@@ -684,8 +1124,10 @@ Si tu proposes une séance d'entraînement concrète dans ta réponse, ajoute à
 
         const prompt = `Question de l'utilisateur : "${userMsg}"
 Contexte actuel :
-* Niveau actuel : Niveau ${currentLevel} / 12 (${activeLevelData.title})
+* Prochaine séance Muscu : Workout ${nextGymWorkout} (35 min)
+* Mode Rameur : ${prescribedRowMode === 'rebuild' ? 'Rebuild 10x 1m/1m' : `Niveau ${currentLevel} / 12`}
 * Tension Psoas : ${psoasTension}/5, Confort Lombaire : ${lumbarComfort}/5, Électrolytes pris : ${electrolytesTaken ? 'Oui' : 'Non'}
+* Poids : ${userBodyweight} kg (Cible Protéines : ${Math.round(userBodyweight * 1.6)} g/j)
 * Historique récent : ${workouts.length} séances au total.`;
 
         const userContext = { psoasTension, lumbarComfort, electrolytesTaken, currentLevel, levelData: activeLevelData };
@@ -811,10 +1253,14 @@ Donne :
           const savedCoreDate = localStorage.getItem('health_os_core_date_v10');
           const hasCoreToday = savedCoreDate === todayStr;
 
-          if (!hasSessionToday || !hasCoreToday) {
-            let msg = "🌙 Pensez à votre séance ou Core Shield (5 min) pour verrouiller le bassin avant de dormir.";
-            if (!hasSessionToday && !hasCoreToday) {
-              msg = "🌙 Séance et Core Shield non effectués aujourd'hui. 5 min de gainage ce soir ?";
+          const savedFloorDate = localStorage.getItem('health_os_floor_date_v10');
+          const hasFloorToday = savedFloorDate === todayStr;
+          const hasCoreOrFloor = hasCoreToday || hasFloorToday;
+
+          if (!hasSessionToday || !hasCoreOrFloor) {
+            let msg = "🌙 Pensez à votre Routine Sol (4 min) ou Core Shield pour verrouiller le bassin avant de dormir.";
+            if (!hasSessionToday && !hasCoreOrFloor) {
+              msg = "🌙 Séance et Routine Sol non effectuées aujourd'hui. 4 min de tapis ce soir (pont fessier & bird-dog) ?";
             }
             sendPwaNotification(
               "Health & Longevity OS • Soir",
@@ -1229,12 +1675,501 @@ Fais un audit de progression :
                   </div>
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {/* 1. Interactive Guided Gym Workout Runner Modal (Workout A / B) */}
+          {showGymRunnerModal && (() => {
+            const currentWk = gymRunnerWorkout === 'A' ? WORKOUT_A : WORKOUT_B;
+            const curEx = currentWk.exercises[gymRunnerExerciseIndex] || currentWk.exercises[0];
+            return (
+              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+                <div className={`max-w-md w-full max-h-[92vh] overflow-y-auto rounded-3xl p-5 border ${st.card} space-y-4 shadow-2xl`}>
+                  <div className="flex items-center justify-between border-b pb-3 border-[#e2ded6] dark:border-zinc-800">
+                    <div className="flex items-center space-x-2">
+                      <IconDumbbell className="w-5 h-5 text-[#446857]" />
+                      <div>
+                        <h2 className="text-xs font-bold uppercase tracking-wider">{currentWk.title}</h2>
+                        <p className={`text-[10px] ${st.subtext}`}>Séance Guidée 35 min • Spine-First</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button 
+                        onClick={() => {
+                          const next = gymRunnerWorkout === 'A' ? 'B' : 'A';
+                          setGymRunnerWorkout(next);
+                          setGymRunnerExerciseIndex(0);
+                          setGymRunnerSetIndex(1);
+                          setIsGymRestRunning(false);
+                          setGymRestSeconds(45);
+                        }}
+                        className="text-[10.5px] px-2 py-1 rounded-lg border border-[#e2ded6] dark:border-zinc-700 hover:border-[#446857] transition font-semibold"
+                      >
+                        Passer à {gymRunnerWorkout === 'A' ? 'B' : 'A'}
+                      </button>
+                      <button onClick={() => { setShowGymRunnerModal(false); setIsGymRestRunning(false); }} className={`p-1 text-xs ${st.subtext} font-bold`}>✕</button>
+                    </div>
+                  </div>
+
+                  {/* Progress Header */}
+                  <div className="flex items-center justify-between text-xs pt-1">
+                    <span className="font-bold text-[#446857] uppercase text-[10px] tracking-wider">
+                      Exercice {gymRunnerExerciseIndex + 1} / {currentWk.exercises.length}
+                    </span>
+                    <span className={`text-[10.5px] font-semibold px-2 py-0.5 rounded-full ${st.accentBg}`}>
+                      Série {gymRunnerSetIndex} sur 3
+                    </span>
+                  </div>
+
+                  {/* Active Exercise Box */}
+                  <div className={`p-4 rounded-2xl border ${st.subCard} space-y-3`}>
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#446857]/15 text-[#446857] inline-block mb-1">
+                          Groupe {curEx.group} {curEx.paired ? `(Superset avec ${curEx.paired})` : ''}
+                        </span>
+                        <h3 className="text-sm font-bold">{curEx.name}</h3>
+                      </div>
+                      <span className="text-xs font-mono font-bold text-[#446857] shrink-0 bg-white/70 dark:bg-black/30 px-2 py-1 rounded-lg border border-[#e2ded6] dark:border-zinc-800">
+                        {curEx.setsReps}
+                      </span>
+                    </div>
+
+                    <p className={`text-xs ${st.subtext} leading-snug`}>{curEx.purpose}</p>
+
+                    <div className="p-3 rounded-xl border border-[#446857]/30 bg-[#446857]/5 text-xs space-y-1">
+                      <p className="font-bold text-[#446857] text-[11px] flex items-center gap-1">
+                        <IconShield className="w-3.5 h-3.5" /> Consigne & Repère Biomécanique :
+                      </p>
+                      <p className="text-[11px] leading-relaxed opacity-90">{curEx.cue}</p>
+                    </div>
+
+                    {curEx.paired && (
+                      <div className="text-[10.5px] opacity-75 pt-1 border-t border-[#e2ded6] dark:border-zinc-800 flex items-center justify-between">
+                        <span>Exercice combiné :</span>
+                        <strong className="text-[#446857]">{currentWk.exercises.find(e => e.group === curEx.paired)?.name || curEx.paired}</strong>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Rest Timer Widget (45s) */}
+                  <div className={`p-3.5 rounded-2xl border text-center space-y-2 ${isGymRestRunning ? 'bg-[#446857]/15 border-[#446857]' : st.subCard}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-[#446857]">Chronomètre Repos (45s)</span>
+                      {isGymRestRunning && <span className="text-[10px] font-mono animate-pulse font-bold text-[#446857]">EN COURS</span>}
+                    </div>
+
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-3xl font-extrabold font-mono tracking-tight">{gymRestSeconds}s</span>
+                      <div className="flex flex-col gap-1">
+                        <button
+                          onClick={() => {
+                            if (isGymRestRunning) {
+                              setIsGymRestRunning(false);
+                            } else {
+                              if (gymRestSeconds === 0) setGymRestSeconds(45);
+                              setIsGymRestRunning(true);
+                              playChime(528, 'sine', 0.2);
+                            }
+                          }}
+                          className={`px-3 py-1 rounded-lg text-xs font-bold transition ${isGymRestRunning ? st.btnSecondary : st.btnPrimary}`}
+                        >
+                          {isGymRestRunning ? 'Pause' : 'Démarrer Repos (45s)'}
+                        </button>
+                        {isGymRestRunning && (
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => setGymRestSeconds(s => s + 15)}
+                              className="text-[10px] px-1.5 py-0.5 rounded border border-[#e2ded6] dark:border-zinc-700 font-bold opacity-80"
+                            >
+                              +15s
+                            </button>
+                            <button
+                              onClick={() => { setIsGymRestRunning(false); setGymRestSeconds(45); }}
+                              className="text-[10px] px-1.5 py-0.5 rounded border border-[#e2ded6] dark:border-zinc-700 font-bold opacity-80"
+                            >
+                              Passer
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stepper Controls */}
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <button
+                      onClick={() => {
+                        // Check if current exercise has sets remaining
+                        if (gymRunnerSetIndex < 3) {
+                          setGymRunnerSetIndex(s => s + 1);
+                          // Trigger 45s rest timer automatically for friction-free pacing
+                          setGymRestSeconds(45);
+                          setIsGymRestRunning(true);
+                          playChime(660, 'sine', 0.25);
+                          showToast(`Série ${gymRunnerSetIndex} validée ! Repos 45s lancé.`);
+                        } else {
+                          // Next exercise
+                          if (gymRunnerExerciseIndex < currentWk.exercises.length - 1) {
+                            setGymRunnerExerciseIndex(i => i + 1);
+                            setGymRunnerSetIndex(1);
+                            setGymRestSeconds(45);
+                            setIsGymRestRunning(true);
+                            playChime(880, 'sine', 0.3);
+                            showToast("Exercice validé ! Enchaînement suivant.");
+                          } else {
+                            handleQuickValidateGym(gymRunnerWorkout);
+                            setShowGymRunnerModal(false);
+                          }
+                        }
+                      }}
+                      className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${st.btnPrimary}`}
+                    >
+                      <IconCheck className="w-3.5 h-3.5" />
+                      <span>{gymRunnerSetIndex < 3 ? `Valider Série ${gymRunnerSetIndex}/3` : (gymRunnerExerciseIndex < currentWk.exercises.length - 1 ? 'Exercice Suivant →' : 'Finir la séance')}</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (gymRunnerExerciseIndex < currentWk.exercises.length - 1) {
+                          setGymRunnerExerciseIndex(i => i + 1);
+                          setGymRunnerSetIndex(1);
+                          setIsGymRestRunning(false);
+                          setGymRestSeconds(45);
+                        } else {
+                          setGymRunnerExerciseIndex(0);
+                          setGymRunnerSetIndex(1);
+                        }
+                      }}
+                      className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition ${st.btnSecondary}`}
+                    >
+                      Sauter cet exercice &rarr;
+                    </button>
+                  </div>
+
+                  {/* Immediate Direct Finish Button */}
+                  <button
+                    onClick={() => {
+                      handleQuickValidateGym(gymRunnerWorkout);
+                      setShowGymRunnerModal(false);
+                    }}
+                    className="w-full py-2 rounded-xl text-xs font-bold text-[#446857] bg-[#446857]/10 hover:bg-[#446857]/20 transition flex items-center justify-center gap-1.5"
+                  >
+                    ⚡ Valider la séance complète (35 min) au Journal
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* 2. Interactive Concept2 Rebuild 10x (1m ON / 1m OFF) Interval Runner Modal */}
+          {showConcept2FixModal && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+              <div className={`max-w-md w-full max-h-[92vh] overflow-y-auto rounded-3xl p-5 border ${st.card} space-y-4 shadow-2xl`}>
+                <div className="flex items-center justify-between border-b pb-3 border-[#e2ded6] dark:border-zinc-800">
+                  <div className="flex items-center space-x-2">
+                    <IconFlame className="w-5 h-5 text-[#b07d3a]" />
+                    <div>
+                      <h2 className="text-xs font-bold uppercase tracking-wider">Concept2 Rebuild Finisher</h2>
+                      <p className={`text-[10px] ${st.subtext}`}>10 × (1 min ON / 1 min OFF) • Damper 3-4</p>
+                    </div>
+                  </div>
+                  <button onClick={() => { setShowConcept2FixModal(false); setIsC2TimerRunning(false); }} className={`p-1 text-xs ${st.subtext} font-bold`}>✕</button>
+                </div>
+
+                {/* State Banner */}
+                <div className={`p-4 rounded-2xl border text-center space-y-2 transition-all ${
+                  c2IntervalPhase === 'warmup' ? 'bg-sky-500/10 border-sky-400 text-sky-900 dark:text-sky-200' :
+                  c2IntervalPhase === 'work' ? 'bg-[#446857]/20 border-[#446857] text-[#2c302e] dark:text-[#f4f2ee]' :
+                  c2IntervalPhase === 'rest' ? 'bg-amber-500/15 border-amber-400 text-amber-900 dark:text-amber-200' :
+                  'bg-emerald-500/15 border-emerald-400 text-emerald-900'
+                }`}>
+                  <div className="flex items-center justify-between text-xs font-bold">
+                    <span>
+                      {c2IntervalPhase === 'warmup' ? 'ÉCHAUFFEMENT' :
+                       c2IntervalPhase === 'work' ? `EFFORT : TOUR ${c2IntervalRound} / 10` :
+                       c2IntervalPhase === 'rest' ? `RÉCUPÉRATION : TOUR ${c2IntervalRound} / 10` :
+                       'PROTOCOLE COMPLÉTÉ ✓'}
+                    </span>
+                    <span className="text-[10px] opacity-75">
+                      {c2IntervalPhase === 'work' ? '120–140W @ 22–24 s/m' : c2IntervalPhase === 'warmup' ? 'Pieds non sanglés' : 'Reset colonne'}
+                    </span>
+                  </div>
+
+                  <div className="py-2">
+                    <span className="text-4xl font-extrabold font-mono tracking-tight">
+                      {c2IntervalPhase === 'warmup' 
+                        ? `${Math.floor(c2TimerSeconds / 60)}:${String(c2TimerSeconds % 60).padStart(2, '0')}`
+                        : `${c2TimerSeconds}s`}
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] leading-snug opacity-90">
+                    {c2IntervalPhase === 'warmup' ? 'Ramez facile pendant 3 minutes sans sangler les pieds (Feet Out) pour obliger le transverse à travailler.' :
+                     c2IntervalPhase === 'work' ? 'Propulsion fessiers/jambes explosive, buste verrouillé à 11h, prise crochet relâchée.' :
+                     c2IntervalPhase === 'rest' ? 'Relâchez complètement, restez assis droit sur l’avant des ischions et respirez profondément.' :
+                     'Excellent travail ! Vos vertèbres L4-L5 ont été protégées et le couple moteur est validé.'}
+                  </p>
+                </div>
+
+                {/* Round Progress Bar */}
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-[10px] opacity-70 font-semibold">
+                    <span>Progression des Intervalles</span>
+                    <span>{c2IntervalRound} / 10</span>
+                  </div>
+                  <div className="grid grid-cols-10 gap-1">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(r => (
+                      <div
+                        key={r}
+                        className={`h-2 rounded-full transition-all ${
+                          r < c2IntervalRound ? 'bg-[#446857]' :
+                          r === c2IntervalRound ? (c2IntervalPhase === 'work' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500') :
+                          'bg-black/10 dark:bg-white/10'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Golden Concept2 Rules Quick Reminder */}
+                <div className={`p-3 rounded-xl border text-[11px] space-y-1.5 ${st.subCard}`}>
+                  <p className="font-bold text-[#446857] flex items-center gap-1 text-[11px]">
+                    <IconShield className="w-3.5 h-3.5" /> 4 Règles d’Or Concept2 :
+                  </p>
+                  <ul className="space-y-1 text-[10.5px] opacity-85 list-disc list-inside">
+                    <li><strong>Damper 3 ou 4</strong> (Drag 110-115) • Jamais plus lourd.</li>
+                    <li><strong>Pieds « Feet Out »</strong> à l’échauffement pour inhiber le psoas.</li>
+                    <li><strong>Charnière 11h</strong> calée avant que les genoux ne plient au retour.</li>
+                  </ul>
+                </div>
+
+                {/* Controls */}
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <button
+                    onClick={() => {
+                      const next = !isC2TimerRunning;
+                      setIsC2TimerRunning(next);
+                      if (next) playChime(528, 'sine', 0.2);
+                    }}
+                    className={`py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${st.btnPrimary}`}
+                  >
+                    {isC2TimerRunning ? <IconPause className="w-3.5 h-3.5" /> : <IconPlay className="w-3.5 h-3.5" />}
+                    <span>{isC2TimerRunning ? 'Pause' : 'Démarrer le Chrono'}</span>
+                  </button>
+
+                  {c2IntervalPhase === 'warmup' ? (
+                    <button
+                      onClick={() => {
+                        setC2IntervalPhase('work');
+                        setC2TimerSeconds(60);
+                        setC2IntervalRound(1);
+                        setIsC2TimerRunning(true);
+                        playChime(880, 'sine', 0.3);
+                      }}
+                      className={`py-2.5 rounded-xl text-xs font-semibold border transition ${st.btnSecondary}`}
+                    >
+                      Sauter vers 10x1m &rarr;
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (c2IntervalRound < 10) {
+                          setC2IntervalRound(r => r + 1);
+                          setC2IntervalPhase('work');
+                          setC2TimerSeconds(60);
+                          playChime(880, 'sine', 0.3);
+                        } else {
+                          setC2IntervalPhase('done');
+                          setIsC2TimerRunning(false);
+                        }
+                      }}
+                      className={`py-2.5 rounded-xl text-xs font-semibold border transition ${st.btnSecondary}`}
+                    >
+                      Tour suivant &rarr;
+                    </button>
+                  )}
+                </div>
+
+                {/* Direct Log Button */}
                 <button
-                  onClick={() => setShowDeskBridgeModal(false)}
-                  className={`w-full py-2.5 rounded-xl text-xs font-semibold transition ${st.btnPrimary}`}
+                  onClick={() => {
+                    handleQuickValidateConcept2Fix();
+                    setShowConcept2FixModal(false);
+                  }}
+                  className="w-full py-2.5 rounded-xl text-xs font-bold bg-[#446857]/15 hover:bg-[#446857]/25 text-[#446857] transition flex items-center justify-center gap-1.5"
                 >
-                  Sas Validé ✓ Monter sur le Rameur
+                  <IconCheck className="w-3.5 h-3.5" />
+                  <span>Consigner cette séance Finisher au Journal (130W • 15m)</span>
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* 3. Interactive Guided Evening Floor Routine Modal (4 Mins) */}
+          {showFloorRoutineModal && (() => {
+            const curEx = FLOOR_ROUTINE.exercises[floorExerciseIndex] || FLOOR_ROUTINE.exercises[0];
+            return (
+              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+                <div className={`max-w-md w-full max-h-[92vh] overflow-y-auto rounded-3xl p-5 border ${st.card} space-y-4 shadow-2xl`}>
+                  <div className="flex items-center justify-between border-b pb-3 border-[#e2ded6] dark:border-zinc-800">
+                    <div className="flex items-center space-x-2">
+                      <IconShield className="w-5 h-5 text-[#446857]" />
+                      <div>
+                        <h2 className="text-xs font-bold uppercase tracking-wider">Routine Sol Quotidienne Soir</h2>
+                        <p className={`text-[10px] ${st.subtext}`}>4 min en famille • Zéro sit-up / crunch</p>
+                      </div>
+                    </div>
+                    <button onClick={() => { setShowFloorRoutineModal(false); setIsFloorTimerRunning(false); }} className={`p-1 text-xs ${st.subtext} font-bold`}>✕</button>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-0.5">
+                    <span className="font-bold text-[#446857] uppercase text-[10px] tracking-wider">
+                      Étape {floorExerciseIndex + 1} sur {FLOOR_ROUTINE.exercises.length}
+                    </span>
+                    <span className="text-[10.5px] opacity-75">{curEx.target}</span>
+                  </div>
+
+                  {/* Active Exercise Detail */}
+                  <div className={`p-4 rounded-2xl border ${st.subCard} space-y-2.5`}>
+                    <h3 className="text-sm font-bold">{curEx.name}</h3>
+                    <p className="text-xs font-mono font-semibold text-[#446857]">{curEx.prescription}</p>
+                    <div className="p-2.5 rounded-xl border border-[#446857]/30 bg-[#446857]/5 text-xs">
+                      <p className="text-[11px] leading-relaxed">{curEx.cue}</p>
+                    </div>
+                  </div>
+
+                  {/* Countdown Timer */}
+                  <div className={`p-4 rounded-2xl border text-center space-y-2 ${isFloorTimerRunning ? 'bg-[#446857]/15 border-[#446857]' : st.subCard}`}>
+                    <span className="text-4xl font-extrabold font-mono tracking-tight">{floorTimerSeconds}s</span>
+                    <p className={`text-[10.5px] ${st.subtext}`}>
+                      {curEx.holdSec ? `Maintien isométrique de ${curEx.holdSec} secondes à chaque répétition` : 'Maintenir le bassin rigide'}
+                    </p>
+                  </div>
+
+                  {/* Controls */}
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <button
+                      onClick={() => {
+                        const next = !isFloorTimerRunning;
+                        setIsFloorTimerRunning(next);
+                        if (next) playChime(528, 'sine', 0.2);
+                      }}
+                      className={`py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 ${st.btnPrimary}`}
+                    >
+                      {isFloorTimerRunning ? <IconPause className="w-3.5 h-3.5" /> : <IconPlay className="w-3.5 h-3.5" />}
+                      <span>{isFloorTimerRunning ? 'Pause' : 'Démarrer (40s)'}</span>
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        if (floorExerciseIndex < FLOOR_ROUTINE.exercises.length - 1) {
+                          const nextIdx = floorExerciseIndex + 1;
+                          setFloorExerciseIndex(nextIdx);
+                          setFloorTimerSeconds(FLOOR_ROUTINE.exercises[nextIdx].holdSec ? 45 : 30);
+                          playChime(660, 'sine', 0.25);
+                        } else {
+                          handleQuickValidateFloorRoutine();
+                          setShowFloorRoutineModal(false);
+                        }
+                      }}
+                      className={`py-2.5 rounded-xl text-xs font-semibold border transition ${st.btnSecondary}`}
+                    >
+                      {floorExerciseIndex < FLOOR_ROUTINE.exercises.length - 1 ? 'Exercice Suivant →' : 'Valider la routine'}
+                    </button>
+                  </div>
+
+                  {/* 1-Tap Autonomy Button */}
+                  <button
+                    onClick={() => {
+                      handleQuickValidateFloorRoutine();
+                      setShowFloorRoutineModal(false);
+                    }}
+                    className="w-full py-2 rounded-xl text-xs font-bold text-[#446857] bg-[#446857]/10 hover:bg-[#446857]/20 transition flex items-center justify-center gap-1.5"
+                  >
+                    ⚡ Valider en autonomie (Fait au sol ce soir)
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* 4. Full Biomechanical Audit & Reality Check Modal */}
+          {showAuditModal && (
+            <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+              <div className={`max-w-md w-full max-h-[92vh] overflow-y-auto rounded-3xl p-5 border ${st.card} space-y-4 shadow-2xl`}>
+                <div className="flex items-center justify-between border-b pb-3 border-[#e2ded6] dark:border-zinc-800">
+                  <div className="flex items-center space-x-2">
+                    <IconBrain className="w-5 h-5 text-[#446857]" />
+                    <div>
+                      <h2 className="text-xs font-bold uppercase tracking-wider">Audit Biomécanique & Réalité</h2>
+                      <p className={`text-[10px] ${st.subtext}`}>Diagnostic clinique complet & Solutions</p>
+                    </div>
+                  </div>
+                  <button onClick={() => setShowAuditModal(false)} className={`p-1 text-xs ${st.subtext} font-bold`}>✕</button>
+                </div>
+
+                {/* Audit Items */}
+                <div className="space-y-3 text-xs leading-relaxed">
+                  {BIOMECHANICAL_AUDIT.items.map((item, idx) => (
+                    <div key={idx} className={`p-3.5 rounded-2xl border ${st.subCard} space-y-1`}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-[#446857]">{item.title}</span>
+                        <span className="text-[9.5px] font-semibold opacity-70 uppercase tracking-wider">{item.subtitle}</span>
+                      </div>
+                      <p className="text-[11px] opacity-90 leading-relaxed">{item.desc}</p>
+                    </div>
+                  ))}
+
+                  {/* Interactive Nutrition & Bodyweight Calculator */}
+                  <div className={`p-4 rounded-2xl border border-[#446857]/30 bg-[#446857]/10 space-y-2`}>
+                    <span className="text-[11px] font-bold text-[#446857] uppercase tracking-wider block">
+                      Calculateur Nutrition Overhaul (1,6 g / kg)
+                    </span>
+                    <div className="flex items-center justify-between text-xs">
+                      <span>Poids corporel actuel :</span>
+                      <span className="font-bold font-mono text-sm">{userBodyweight} kg</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="70"
+                      max="115"
+                      value={userBodyweight}
+                      onChange={e => setUserBodyweight(Number(e.target.value))}
+                      className="w-full accent-[#446857] cursor-pointer"
+                    />
+                    <div className="grid grid-cols-2 gap-2 text-center pt-1 text-xs">
+                      <div className="p-2 rounded-xl bg-white/70 dark:bg-black/30 border border-[#446857]/20">
+                        <p className="text-[10px] opacity-75">Cible Protéines :</p>
+                        <p className="text-sm font-bold text-[#446857] mt-0.5">{Math.round(userBodyweight * 1.6)} g / jour</p>
+                      </div>
+                      <div className="p-2 rounded-xl bg-white/70 dark:bg-black/30 border border-[#446857]/20">
+                        <p className="text-[10px] opacity-75">Déficit Quotidien :</p>
+                        <p className="text-sm font-bold text-[#b07d3a] mt-0.5">-300 à -500 kcal</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-1">
+                  <button
+                    onClick={() => {
+                      setShowAuditModal(false);
+                      setGymRunnerWorkout('A');
+                      setShowGymRunnerModal(true);
+                    }}
+                    className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition ${st.btnPrimary}`}
+                  >
+                    Lancer Workout A (35m)
+                  </button>
+                  <button
+                    onClick={() => setShowAuditModal(false)}
+                    className={`flex-1 py-2.5 rounded-xl text-xs font-semibold border transition ${st.btnSecondary}`}
+                  >
+                    Fermer
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -1403,38 +2338,144 @@ Fais un audit de progression :
                   </div>
                 )}
 
-                {/* TAB: SALLE & SAS */}
+                {/* TAB: SALLE & PROGRAMME 35M */}
                 {quickActionTab === 'gym' && (
-                  <div className="space-y-3 text-xs">
+                  <div className="space-y-2.5 text-xs">
                     <p className={`text-[11px] leading-relaxed ${st.subtext}`}>
-                      Renforcement postural, travail de grip et décompression lombaire à la salle de travail (100 CHF).
+                      Programme 35-min à la salle de travail (3x/semaine) avec règle Spine-First, ou décompression :
                     </p>
-                    <div 
-                      onClick={() => {
-                        handleAddManualSession('WORK_GYM', 20, null, null, null, 'Suspensions décompression & Farmer Walk');
-                        playChime(528, 'sine', 0.2);
-                        setShowQuickActionSheet(false);
-                      }}
-                      className={`p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between ${st.subCard} hover:border-[#446857]/50`}
-                    >
-                      <div className="flex items-center space-x-2.5">
-                        <IconDumbbell className="w-4 h-4 text-[#446857]" />
-                        <div>
-                          <p className="text-xs font-bold">20 min • Suspensions & Farmer Walk</p>
-                          <p className={`text-[10.5px] ${st.subtext}`}>Décompression discale, renforcement du grip et de la posture</p>
+
+                    {/* Workout A Card */}
+                    <div className={`p-3.5 rounded-2xl border ${st.subCard} space-y-2 hover:border-[#446857]/50 transition`}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center space-x-2">
+                          <IconDumbbell className="w-4 h-4 text-[#446857]" />
+                          <div>
+                            <p className="text-xs font-bold">Workout A (35 min) • Dos & Pecs</p>
+                            <p className={`text-[10px] ${st.subtext}`}>Row couché 30-45° + Dév. incliné • Fentes trépied + Deadbug • Élévations</p>
+                          </div>
                         </div>
+                        {nextGymWorkout === 'A' && (
+                          <span className={`text-[9.5px] font-bold px-2 py-0.5 rounded-full ${st.accentBg} shrink-0`}>Conseillé</span>
+                        )}
                       </div>
-                      <span className="text-xs font-bold text-[#446857] px-2.5 py-1 rounded-full bg-[#446857]/10 shrink-0">⚡ Valider (1-Tap)</span>
+                      <div className="flex gap-1.5 pt-1">
+                        <button
+                          onClick={() => {
+                            handleQuickValidateGym('A');
+                            setShowQuickActionSheet(false);
+                          }}
+                          className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 ${st.btnPrimary}`}
+                        >
+                          ⚡ Valider (1-Tap)
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowQuickActionSheet(false);
+                            setGymRunnerWorkout('A');
+                            setGymRunnerExerciseIndex(0);
+                            setGymRunnerSetIndex(1);
+                            setIsGymRestRunning(false);
+                            setGymRestSeconds(45);
+                            setShowGymRunnerModal(true);
+                          }}
+                          className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold border transition flex items-center justify-center gap-1 ${st.btnSecondary}`}
+                        >
+                          <IconPlay className="w-3 h-3 text-[#446857]" /> Lancer Guidé
+                        </button>
+                      </div>
                     </div>
 
+                    {/* Workout B Card */}
+                    <div className={`p-3.5 rounded-2xl border ${st.subCard} space-y-2 hover:border-[#446857]/50 transition`}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center space-x-2">
+                          <IconDumbbell className="w-4 h-4 text-[#446857]" />
+                          <div>
+                            <p className="text-xs font-bold">Workout B (35 min) • Tirage & Épaules 75°</p>
+                            <p className={`text-[10px] ${st.subtext}`}>Tirage poitrine + Dév. 75° • Leg curl/RDL + Presse • Suitcase carry</p>
+                          </div>
+                        </div>
+                        {nextGymWorkout === 'B' && (
+                          <span className={`text-[9.5px] font-bold px-2 py-0.5 rounded-full ${st.accentBg} shrink-0`}>Conseillé</span>
+                        )}
+                      </div>
+                      <div className="flex gap-1.5 pt-1">
+                        <button
+                          onClick={() => {
+                            handleQuickValidateGym('B');
+                            setShowQuickActionSheet(false);
+                          }}
+                          className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 ${st.btnPrimary}`}
+                        >
+                          ⚡ Valider (1-Tap)
+                        </button>
+                        <button
+                          onClick={() => {
+                            setShowQuickActionSheet(false);
+                            setGymRunnerWorkout('B');
+                            setGymRunnerExerciseIndex(0);
+                            setGymRunnerSetIndex(1);
+                            setIsGymRestRunning(false);
+                            setGymRestSeconds(45);
+                            setShowGymRunnerModal(true);
+                          }}
+                          className={`flex-1 py-1.5 px-2 rounded-xl text-xs font-semibold border transition flex items-center justify-center gap-1 ${st.btnSecondary}`}
+                        >
+                          <IconPlay className="w-3 h-3 text-[#446857]" /> Lancer Guidé
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Concept2 Finisher Quick Option */}
+                    <div className={`p-3 rounded-2xl border ${st.subCard} flex items-center justify-between gap-2`}>
+                      <div className="flex items-center space-x-2">
+                        <IconFlame className="w-4 h-4 text-[#b07d3a]" />
+                        <div>
+                          <p className="text-xs font-bold">Concept2 Finisher 10x 1m/1m</p>
+                          <p className={`text-[10px] ${st.subtext}`}>120-140W @ 22-24s/m • Damper 3-4</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setShowQuickActionSheet(false);
+                          setShowConcept2FixModal(true);
+                        }}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold border ${st.btnSecondary}`}
+                      >
+                        Chrono &rarr;
+                      </button>
+                    </div>
+
+                    {/* Floor Routine Quick Option */}
+                    <div className={`p-3 rounded-2xl border ${st.subCard} flex items-center justify-between gap-2`}>
+                      <div className="flex items-center space-x-2">
+                        <IconShield className="w-4 h-4 text-[#446857]" />
+                        <div>
+                          <p className="text-xs font-bold">Routine Sol Soir (4 min)</p>
+                          <p className={`text-[10px] ${st.subtext}`}>Pont fessier • Bird-dog • Gainage genoux</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setShowQuickActionSheet(false);
+                          setShowFloorRoutineModal(true);
+                        }}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold border ${st.btnSecondary}`}
+                      >
+                        Chrono &rarr;
+                      </button>
+                    </div>
+
+                    {/* Desk Bridge Sas */}
                     <div 
                       onClick={() => {
                         setShowQuickActionSheet(false);
                         setShowDeskBridgeModal(true);
                       }}
-                      className={`p-3.5 rounded-xl border cursor-pointer transition flex items-center justify-between ${st.subCard} hover:border-[#446857]/50`}
+                      className={`p-3 rounded-2xl border cursor-pointer transition flex items-center justify-between ${st.subCard} hover:border-[#446857]/50`}
                     >
-                      <div className="flex items-center space-x-2.5">
+                      <div className="flex items-center space-x-2">
                         <IconShield className="w-4 h-4 text-[#446857]" />
                         <div>
                           <p className="text-xs font-bold">2 min • Le Sas « Bureau &rarr; Rameur »</p>
@@ -1961,153 +3002,299 @@ Fais un audit de progression :
                   )}
                 </div>
 
-                {/* Daily Prescription Card */}
-                <div className={`rounded-2xl p-4 border ${st.card} space-y-3`}>
+                {/* Programme Muscu 35m (Work-Gym) Primary Card */}
+                <div className={`rounded-2xl p-4 border ${st.card} space-y-3 shadow-sm`}>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <IconLayers className="w-3.5 h-3.5 text-[#446857]" /> Prescription Rameur : {activeLevelData.title}
+                    <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-[#446857]">
+                      <IconDumbbell className="w-4 h-4 text-[#446857]" /> Programme Muscu 35m (Overhaul)
                     </span>
-                    <button onClick={() => { setActiveTab('training'); setSubTabTraining('load'); }} className={`text-[11px] font-medium ${st.accent}`}>
-                      12 Paliers &rarr;
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-3 gap-2 text-center pt-0.5">
-                    <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
-                      <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Format</p>
-                      <p className="text-xs font-bold mt-0.5">{activeLevelData.format}</p>
-                      <p className={`text-[10px] ${st.subtext}`}>Repos {activeLevelData.rest}</p>
-                    </div>
-                    <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
-                      <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Watts Cible</p>
-                      <p className="text-xs font-bold mt-0.5">
-                        {isPsoasAlert ? '90 - 95 W' : activeLevelData.targetWatts}
-                      </p>
-                      <p className={`text-[10px] ${st.subtext}`}>Cadence {activeLevelData.cadence}</p>
-                    </div>
-                    <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
-                      <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Cible SPI</p>
-                      <p className="text-xs font-bold mt-0.5">&ge; {activeLevelData.targetSpi}</p>
-                      <p className={`text-[10px] ${st.subtext}`}>Drag 115</p>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#e2ded6] flex flex-col gap-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold flex items-center gap-1.5 text-[#446857]">
-                        Séance Cible : <strong>{effectiveWatts} W</strong> @ <strong>{effectiveCadence} s/m</strong> (SPI {effectiveSpi})
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-[10.5px] font-bold px-2.5 py-0.5 rounded-full ${st.accentBg}`}>
+                        Séance conseillée : Workout {nextGymWorkout}
                       </span>
                       <button
-                        onClick={() => setShowCustomTodayRow(!showCustomTodayRow)}
-                        className="text-[10.5px] text-[#446857] underline opacity-85 hover:opacity-100 font-medium"
+                        onClick={() => {
+                          const next = nextGymWorkout === 'A' ? 'B' : 'A';
+                          setNextGymWorkout(next);
+                          localStorage.setItem('health_os_next_gym', next);
+                          playChime(528, 'sine', 0.15);
+                        }}
+                        title="Basculer vers l'autre séance"
+                        className="text-[10px] underline opacity-75 hover:opacity-100 font-semibold"
                       >
-                        {showCustomTodayRow ? 'Masquer détails' : 'Ajuster durée / notes'}
+                        Basculer à {nextGymWorkout === 'A' ? 'B' : 'A'}
                       </button>
                     </div>
+                  </div>
 
-                    {/* Steppers for Rapid Tuning */}
-                    <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
-                      <div className="flex items-center flex-wrap gap-1.5">
-                        <div className="flex items-center rounded-lg border p-0.5 bg-black/5 dark:bg-white/5">
-                          <span className="px-1 text-[10px] font-bold opacity-60">Watts:</span>
-                          <button 
-                            onClick={() => setCustomWattsDelta(d => d - 5)}
-                            className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
-                          >-5</button>
-                          <span className="px-1.5 font-mono font-bold text-xs">{effectiveWatts}W</span>
-                          <button 
-                            onClick={() => setCustomWattsDelta(d => d + 5)}
-                            className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
-                          >+5</button>
-                        </div>
-
-                        <div className="flex items-center rounded-lg border p-0.5 bg-black/5 dark:bg-white/5">
-                          <span className="px-1 text-[10px] font-bold opacity-60">Cad:</span>
-                          <button 
-                            onClick={() => setCustomCadenceDelta(d => d - 1)}
-                            className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
-                          >-1</button>
-                          <span className="px-1.5 font-mono font-bold text-xs">{effectiveCadence}</span>
-                          <button 
-                            onClick={() => setCustomCadenceDelta(d => d + 1)}
-                            className="px-2 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
-                          >+1</button>
-                        </div>
-
-                        {(customWattsDelta !== 0 || customCadenceDelta !== 0) && (
-                          <button 
-                            onClick={() => { setCustomWattsDelta(0); setCustomCadenceDelta(0); }}
-                            className="text-[10px] px-1.5 py-0.5 rounded opacity-60 hover:opacity-100 underline"
-                          >Reset</button>
-                        )}
-                      </div>
-
-                      <button
-                        onClick={() => setShowDeskBridgeModal(true)}
-                        className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold shrink-0 ${st.btnSecondary}`}
-                      >
-                        Sas Bureau (2m)
-                      </button>
+                  {/* Summary of active workout */}
+                  <div className={`p-3 rounded-xl border ${st.subCard} space-y-1.5`}>
+                    <div className="flex items-center justify-between text-xs font-bold">
+                      <span className="text-xs text-[#2c302e] dark:text-[#f4f2ee]">
+                        {nextGymWorkout === 'A' ? WORKOUT_A.title : WORKOUT_B.title}
+                      </span>
+                      <span className="text-[10.5px] text-[#446857] font-semibold">3 séries × supersets (repos 45s)</span>
                     </div>
+                    <p className={`text-[11px] ${st.subtext} leading-snug`}>
+                      {nextGymWorkout === 'A' 
+                        ? '1A. Row couché 30-45° + 1B. Dév. incliné • 2A. Fentes trépied + 2B. Deadbug • 3. Élévations latérales'
+                        : '1A. Tirage poitrine + 1B. Dév. épaules 75° • 2A. Leg curl/RDL + 2B. Presse • 3. Suitcase carry (40s)'}
+                    </p>
+                    <p className="text-[10px] text-[#446857] font-medium pt-0.5">
+                      🔒 Règle Spine-First : Zéro compression axiale à 90° ni rowing penché libre. Banc incliné obligatoire.
+                    </p>
+                  </div>
 
-                    {/* Optional Custom Row Inputs */}
-                    {showCustomTodayRow && (
-                      <div className="grid grid-cols-2 gap-2 text-xs pt-1 p-2 rounded-xl bg-black/5 dark:bg-white/5">
-                        <div>
-                          <label className="text-[10px] opacity-70">Durée réelle (min) :</label>
-                          <input
-                            type="number"
-                            value={effectiveDuration}
-                            onChange={e => setCustomTodayDuration(e.target.value)}
-                            className={`w-full mt-0.5 px-2 py-1 rounded-lg border text-xs outline-none ${st.subCard}`}
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] opacity-70">Notes / Sensations :</label>
-                          <input
-                            type="text"
-                            value={customTodayNotes}
-                            onChange={e => setCustomTodayNotes(e.target.value)}
-                            placeholder="Hook grip, bassin libre..."
-                            className={`w-full mt-0.5 px-2 py-1 rounded-lg border text-xs outline-none ${st.subCard}`}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Big 1-Tap Logging Button */}
+                  <div className="grid grid-cols-2 gap-2 pt-0.5">
                     <button
-                      onClick={handleLogPrescribedRow}
-                      className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold flex flex-wrap items-center justify-center gap-1.5 shadow-sm transition ${st.btnPrimary}`}
+                      onClick={() => handleQuickValidateGym(nextGymWorkout)}
+                      className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${st.btnPrimary} shadow-sm`}
                     >
-                      <IconCheck className="w-3.5 h-3.5 shrink-0" />
-                      {todaySessionLogged ? (
-                        <span>✓ Séance Validée (+ Consigner autre série • {effectiveWatts}W)</span>
-                      ) : (
-                        <span>⚡ Valider (1-Tap) • {effectiveWatts}W @ {effectiveCadence}s/m ({effectiveSpi} SPI)</span>
-                      )}
+                      <IconCheck className="w-3.5 h-3.5" />
+                      <span>⚡ Valider Workout {nextGymWorkout} (35m)</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setGymRunnerWorkout(nextGymWorkout);
+                        setGymRunnerExerciseIndex(0);
+                        setGymRunnerSetIndex(1);
+                        setIsGymRestRunning(false);
+                        setGymRestSeconds(45);
+                        setShowGymRunnerModal(true);
+                      }}
+                      className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1.5 transition ${st.btnSecondary}`}
+                    >
+                      <IconPlay className="w-3.5 h-3.5 text-[#446857]" />
+                      <span>Lancer Guidé (35m)</span>
                     </button>
                   </div>
                 </div>
 
-                {/* Core Shield Banner */}
-                <div className={`rounded-2xl p-4 border transition ${st.card} flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
+                {/* Daily Prescription Card (Concept2 Rebuild vs Paliers Classiques) */}
+                <div className={`rounded-2xl p-4 border ${st.card} space-y-3`}>
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <IconLayers className="w-3.5 h-3.5 text-[#446857]" /> Prescription Rameur
+                    </span>
+                    {/* Rebuild vs Classic Switcher */}
+                    <div className="flex p-0.5 rounded-lg bg-black/5 dark:bg-white/5 border border-[#e2ded6] dark:border-zinc-800 text-[10.5px]">
+                      <button
+                        onClick={() => {
+                          setPrescribedRowMode('rebuild');
+                          localStorage.setItem('health_os_row_mode', 'rebuild');
+                        }}
+                        className={`px-2 py-0.5 rounded-md font-bold transition ${prescribedRowMode === 'rebuild' ? st.btnPrimary : 'opacity-70'}`}
+                      >
+                        Rebuild 10x1m (Recommandé)
+                      </button>
+                      <button
+                        onClick={() => {
+                          setPrescribedRowMode('classic');
+                          localStorage.setItem('health_os_row_mode', 'classic');
+                        }}
+                        className={`px-2 py-0.5 rounded-md font-medium transition ${prescribedRowMode === 'classic' ? st.btnPrimary : 'opacity-70'}`}
+                      >
+                        Paliers 4x4 (Niv. {currentLevel})
+                      </button>
+                    </div>
+                  </div>
+
+                  {prescribedRowMode === 'rebuild' ? (
+                    /* Concept2 Rebuild Finisher View */
+                    <div className="space-y-3 pt-0.5">
+                      <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs space-y-1">
+                        <p className="font-bold text-amber-900 dark:text-amber-200 text-[11px] flex items-center gap-1">
+                          <IconAlert className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                          Diagnostic Clinique : Stop aux 4x4 min continus à 100W
+                        </p>
+                        <p className="text-[11px] opacity-90 leading-relaxed text-amber-950 dark:text-amber-100">
+                          À 100W, votre bas du dos sature avant la stimulation cardio en raison d'une compensation lombaire et d'une traction au psoas. Remplacement par ce finisher court pour réinitialiser la colonne.
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Format</p>
+                          <p className="text-xs font-bold mt-0.5">10 × (1m / 1m)</p>
+                          <p className={`text-[10px] ${st.subtext}`}>1m on / 1m off</p>
+                        </div>
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Cible Watts</p>
+                          <p className="text-xs font-bold mt-0.5 text-[#446857]">120 – 140 W</p>
+                          <p className={`text-[10px] ${st.subtext}`}>Cadence 22–24</p>
+                        </div>
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Damper</p>
+                          <p className="text-xs font-bold mt-0.5">3 ou 4</p>
+                          <p className={`text-[10px] ${st.subtext}`}>Drag 110–115</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#e2ded6] dark:border-zinc-800">
+                        <button
+                          onClick={handleQuickValidateConcept2Fix}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${st.btnPrimary} shadow-sm`}
+                        >
+                          <IconCheck className="w-3.5 h-3.5" />
+                          <span>⚡ Valider Finisher (130W)</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setC2IntervalRound(1);
+                            setC2IntervalPhase('warmup');
+                            setC2TimerSeconds(180);
+                            setIsC2TimerRunning(false);
+                            setShowConcept2FixModal(true);
+                          }}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1.5 transition ${st.btnSecondary}`}
+                        >
+                          <IconPlay className="w-3.5 h-3.5 text-[#446857]" />
+                          <span>Chrono Intervalles</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Classic 4x4 View */
+                    <div className="space-y-3 pt-0.5">
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Format</p>
+                          <p className="text-xs font-bold mt-0.5">{activeLevelData.format}</p>
+                          <p className={`text-[10px] ${st.subtext}`}>Repos {activeLevelData.rest}</p>
+                        </div>
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Watts Cible</p>
+                          <p className="text-xs font-bold mt-0.5">
+                            {isPsoasAlert ? '90 - 95 W' : activeLevelData.targetWatts}
+                          </p>
+                          <p className={`text-[10px] ${st.subtext}`}>Cadence {activeLevelData.cadence}</p>
+                        </div>
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className={`text-[10px] uppercase font-semibold ${st.subtext}`}>Cible SPI</p>
+                          <p className="text-xs font-bold mt-0.5">&ge; {activeLevelData.targetSpi}</p>
+                          <p className={`text-[10px] ${st.subtext}`}>Drag 115</p>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-[#e2ded6] flex flex-col gap-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-semibold flex items-center gap-1.5 text-[#446857]">
+                            Séance Cible : <strong>{effectiveWatts} W</strong> @ <strong>{effectiveCadence} s/m</strong> (SPI {effectiveSpi})
+                          </span>
+                          <button
+                            onClick={() => setShowCustomTodayRow(!showCustomTodayRow)}
+                            className="text-[10.5px] text-[#446857] underline opacity-85 hover:opacity-100 font-medium"
+                          >
+                            {showCustomTodayRow ? 'Masquer détails' : 'Ajuster durée / notes'}
+                          </button>
+                        </div>
+
+                        {/* Steppers for Rapid Tuning */}
+                        <div className="flex flex-wrap items-center justify-between gap-1.5 text-xs">
+                          <div className="flex items-center flex-wrap gap-1.5">
+                            <div className="flex items-center rounded-lg border p-0.5 bg-black/5 dark:bg-white/5">
+                              <span className="px-1 text-[10px] font-bold opacity-60">Watts:</span>
+                              <button 
+                                onClick={() => setCustomWattsDelta(d => d - 5)}
+                                className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
+                              >-5</button>
+                              <span className="px-1.5 font-mono font-bold text-xs">{effectiveWatts}W</span>
+                              <button 
+                                onClick={() => setCustomWattsDelta(d => d + 5)}
+                                className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
+                              >+5</button>
+                            </div>
+
+                            <div className="flex items-center rounded-lg border p-0.5 bg-black/5 dark:bg-white/5">
+                              <span className="px-1 text-[10px] font-bold opacity-60">Cad:</span>
+                              <button 
+                                onClick={() => setCustomCadenceDelta(d => d - 1)}
+                                className="px-1.5 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
+                              >-1</button>
+                              <span className="px-1.5 font-mono font-bold text-xs">{effectiveCadence}</span>
+                              <button 
+                                onClick={() => setCustomCadenceDelta(d => d + 1)}
+                                className="px-2 py-0.5 rounded text-xs font-bold hover:bg-black/10 transition"
+                              >+1</button>
+                            </div>
+
+                            {(customWattsDelta !== 0 || customCadenceDelta !== 0) && (
+                              <button 
+                                onClick={() => { setCustomWattsDelta(0); setCustomCadenceDelta(0); }}
+                                className="text-[10px] px-1.5 py-0.5 rounded opacity-60 hover:opacity-100 underline"
+                              >Reset</button>
+                            )}
+                          </div>
+
+                          <button
+                            onClick={() => setShowDeskBridgeModal(true)}
+                            className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold shrink-0 ${st.btnSecondary}`}
+                          >
+                            Sas Bureau (2m)
+                          </button>
+                        </div>
+
+                        {showCustomTodayRow && (
+                          <div className="grid grid-cols-2 gap-2 text-xs pt-1 p-2 rounded-xl bg-black/5 dark:bg-white/5">
+                            <div>
+                              <label className="text-[10px] opacity-70">Durée réelle (min) :</label>
+                              <input
+                                type="number"
+                                value={effectiveDuration}
+                                onChange={e => setCustomTodayDuration(e.target.value)}
+                                className={`w-full mt-0.5 px-2 py-1 rounded-lg border text-xs outline-none ${st.subCard}`}
+                              />
+                            </div>
+                            <div>
+                              <label className="text-[10px] opacity-70">Notes / Sensations :</label>
+                              <input
+                                type="text"
+                                value={customTodayNotes}
+                                onChange={e => setCustomTodayNotes(e.target.value)}
+                                placeholder="Hook grip, bassin libre..."
+                                className={`w-full mt-0.5 px-2 py-1 rounded-lg border text-xs outline-none ${st.subCard}`}
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        <button
+                          onClick={handleLogPrescribedRow}
+                          className={`w-full py-2.5 px-3 rounded-xl text-xs font-bold flex flex-wrap items-center justify-center gap-1.5 shadow-sm transition ${st.btnPrimary}`}
+                        >
+                          <IconCheck className="w-3.5 h-3.5 shrink-0" />
+                          {todaySessionLogged ? (
+                            <span>✓ Séance Validée (+ Consigner autre série • {effectiveWatts}W)</span>
+                          ) : (
+                            <span>⚡ Valider (1-Tap) • {effectiveWatts}W @ {effectiveCadence}s/m ({effectiveSpi} SPI)</span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Routine Sol Quotidienne Soir (4 min) Card */}
+                <div className={`rounded-2xl p-4 border transition ${st.card} flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm`}>
                   <div className="space-y-0.5">
-                    <h2 className="text-xs font-bold flex items-center gap-1.5">
-                      <IconShield className="w-3.5 h-3.5 text-[#446857]" />
-                      Core Shield Quotidien (5 min)
-                    </h2>
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-xs font-bold flex items-center gap-1.5">
+                        <IconShield className="w-3.5 h-3.5 text-[#446857]" />
+                        Routine Sol Soir (4 min)
+                      </h2>
+                      {floorCompletedToday && (
+                        <span className="text-[9.5px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800">✓ Fait ce soir</span>
+                      )}
+                    </div>
                     <p className={`text-[11.5px] ${st.subtext}`}>
-                      {coreCompletedToday 
-                        ? '✓ Routine validée. Tronc et lombaires protégés.' 
-                        : 'Dead Bug • Bird-Dog • Glute Bridge. Inactive les spasmes.'}
+                      Pont Fessier (hold 3s) • Bird-Dog (hold 5s) • Gainage latéral genoux. Zéro crunch.
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0 flex-wrap">
-                    {!coreCompletedToday && (
+                    {!floorCompletedToday && (
                       <button
-                        onClick={handleQuickValidateCoreShield}
+                        onClick={handleQuickValidateFloorRoutine}
                         title="Valider sans lancer le compte à rebours"
                         className={`flex-1 sm:flex-initial px-2.5 py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1 border border-[#446857]/30 ${st.btnSecondary}`}
                       >
@@ -2116,39 +3303,79 @@ Fais un audit de progression :
                       </button>
                     )}
                     <button
-                      onClick={() => { setActiveTab('training'); setSubTabTraining('core'); }}
+                      onClick={() => {
+                        setFloorExerciseIndex(0);
+                        setFloorTimerSeconds(36);
+                        setIsFloorTimerRunning(false);
+                        setShowFloorRoutineModal(true);
+                      }}
                       className={`flex-1 sm:flex-initial px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center justify-center gap-1.5 ${
-                        coreCompletedToday ? st.btnSecondary : st.btnPrimary
+                        floorCompletedToday ? st.btnSecondary : st.btnPrimary
                       }`}
                     >
                       <IconPlay className="w-3 h-3" />
-                      {coreCompletedToday ? 'Revoir' : 'Chrono (5m)'}
+                      {floorCompletedToday ? 'Revoir (4m)' : 'Chrono (4m)'}
                     </button>
                   </div>
+                </div>
+
+                {/* Core Shield Banner (Alternative/Complément 5 min) */}
+                <div className={`rounded-2xl p-3.5 border transition ${st.subCard} flex items-center justify-between gap-3 text-xs`}>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-base">🛡️</span>
+                    <div>
+                      <p className="font-bold text-xs">Core Shield Classique (5 min)</p>
+                      <p className={`text-[10.5px] ${st.subtext}`}>Dead Bug • Bird-Dog • Massage plantaire pieds plats</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { setActiveTab('training'); setSubTabTraining('core'); }}
+                    className="text-xs font-bold text-[#446857] underline hover:opacity-80 shrink-0"
+                  >
+                    Ouvrir &rarr;
+                  </button>
                 </div>
 
                 {/* Disciplines Alternatives & Action Sheet Trigger */}
                 <div className={`rounded-2xl p-4 border ${st.card} space-y-3`}>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
-                      <IconCompass className="w-3.5 h-3.5 text-[#446857]" /> Disciplines Alternatives
+                      <IconCompass className="w-3.5 h-3.5 text-[#446857]" /> Disciplines & Raccourcis Rapides
                     </span>
-                    <span className="text-[10px] opacity-70">1-Tap ou Personnalisé</span>
+                    <span className="text-[10px] opacity-70">1-Tap</span>
                   </div>
 
                   {/* Fast 1-Tap Pills */}
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-4 gap-2">
+                    <button
+                      onClick={() => handleQuickValidateGym(nextGymWorkout)}
+                      className={`p-2 rounded-xl border text-center transition flex flex-col items-center justify-center gap-0.5 ${st.subCard} hover:border-[#446857]`}
+                    >
+                      <span className="text-base">🏋️</span>
+                      <span className="text-[10.5px] font-bold">Muscu {nextGymWorkout}</span>
+                      <span className={`text-[9px] ${st.subtext}`}>35 min • Dos</span>
+                    </button>
+
+                    <button
+                      onClick={handleQuickValidateConcept2Fix}
+                      className={`p-2 rounded-xl border text-center transition flex flex-col items-center justify-center gap-0.5 ${st.subCard} hover:border-[#446857]`}
+                    >
+                      <span className="text-base">🚣</span>
+                      <span className="text-[10.5px] font-bold">10x1m Erg</span>
+                      <span className={`text-[9px] ${st.subtext}`}>130W • Finisher</span>
+                    </button>
+
                     <button
                       onClick={() => {
                         handleAddManualSession('SWIM', 35, null, null, 750, 'Piscine Bassin (750m)');
                         playChime(528, 'sine', 0.2);
                         showToast("✓ Séance Piscine 750m consignée !");
                       }}
-                      className={`p-2.5 rounded-xl border text-center transition flex flex-col items-center justify-center gap-1 ${st.subCard} hover:border-[#446857]`}
+                      className={`p-2 rounded-xl border text-center transition flex flex-col items-center justify-center gap-0.5 ${st.subCard} hover:border-[#446857]`}
                     >
-                      <span className="text-sm">🏊</span>
-                      <span className="text-[11px] font-bold">750m Piscine</span>
-                      <span className={`text-[9.5px] ${st.subtext}`}>35 min • Décharge</span>
+                      <span className="text-base">🏊</span>
+                      <span className="text-[10.5px] font-bold">750m Piscine</span>
+                      <span className={`text-[9px] ${st.subtext}`}>35 min • Décharge</span>
                     </button>
 
                     <button
@@ -2157,24 +3384,11 @@ Fais un audit de progression :
                         playChime(528, 'sine', 0.2);
                         showToast("✓ Sortie Rando 1h30 consignée !");
                       }}
-                      className={`p-2.5 rounded-xl border text-center transition flex flex-col items-center justify-center gap-1 ${st.subCard} hover:border-[#446857]`}
+                      className={`p-2 rounded-xl border text-center transition flex flex-col items-center justify-center gap-0.5 ${st.subCard} hover:border-[#446857]`}
                     >
-                      <span className="text-sm">⛰️</span>
-                      <span className="text-[11px] font-bold">1h30 Rando</span>
-                      <span className={`text-[9.5px] ${st.subtext}`}>Zone 2 • Sans à-coups</span>
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        handleAddManualSession('WORK_GYM', 20, null, null, null, 'Suspensions décompression & Farmer Walk (20 min)');
-                        playChime(528, 'sine', 0.2);
-                        showToast("✓ Séance Salle 20m consignée !");
-                      }}
-                      className={`p-2.5 rounded-xl border text-center transition flex flex-col items-center justify-center gap-1 ${st.subCard} hover:border-[#446857]`}
-                    >
-                      <span className="text-sm">🏋️</span>
-                      <span className="text-[11px] font-bold">20m Salle</span>
-                      <span className={`text-[9.5px] ${st.subtext}`}>Suspensions • Dos</span>
+                      <span className="text-base">⛰️</span>
+                      <span className="text-[10.5px] font-bold">1h30 Rando</span>
+                      <span className={`text-[9px] ${st.subtext}`}>Zone 2 Montagne</span>
                     </button>
                   </div>
 
@@ -2186,6 +3400,25 @@ Fais un audit de progression :
                     <IconPlus className="w-3.5 h-3.5 text-[#446857]" />
                     <span>+ Autre activité (Coller Huawei/C2, Rando, Piscine, Séance IA...)</span>
                   </button>
+                </div>
+
+                {/* Biomechanical Audit & Nutrition Direct Banner */}
+                <div 
+                  onClick={() => setShowAuditModal(true)}
+                  className={`rounded-2xl p-4 border cursor-pointer transition ${st.card} hover:border-[#446857] flex items-center justify-between gap-3 shadow-sm`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#446857]/10 flex items-center justify-center text-[#446857] shrink-0">
+                      <IconBrain className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-[#446857]">Audit Biomécanique & Nutrition Overhaul</h3>
+                      <p className={`text-[11px] ${st.subtext}`}>
+                        Bascule bassin & voûte droite • <strong>1,6g/kg Protéines ({Math.round(userBodyweight * 1.6)}g)</strong> • Déficit -400 kcal
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-[#446857] opacity-80">&rarr;</span>
                 </div>
               </div>
             )}
@@ -2220,40 +3453,230 @@ Fais un audit de progression :
                   </div>
                 </div>
 
-                {/* 3-Way Segmented Control */}
-                <div className="flex p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-[#e2ded6] dark:border-zinc-800 text-xs font-medium">
+                {/* 5-Way Ergonomic Segmented Control */}
+                <div className="grid grid-cols-5 p-1 gap-1 rounded-xl bg-black/5 dark:bg-white/5 border border-[#e2ded6] dark:border-zinc-800 text-[10.5px] font-medium">
                   <button
-                    onClick={() => setSubTabTraining('erg')}
-                    className={`flex-1 py-2 px-1 rounded-lg transition flex items-center justify-center gap-1 text-[11px] sm:text-xs ${
-                      subTabTraining === 'erg' ? `${st.btnPrimary} shadow-sm font-semibold` : st.subtext
+                    onClick={() => setSubTabTraining('gym')}
+                    className={`py-2 px-0.5 rounded-lg transition text-center truncate ${
+                      subTabTraining === 'gym' ? `${st.btnPrimary} shadow-sm font-bold` : st.subtext
                     }`}
                   >
-                    <IconFlame className="w-3.5 h-3.5 shrink-0" />
-                    <span>Rameur</span>
+                    Muscu 35m
+                  </button>
+                  <button
+                    onClick={() => setSubTabTraining('erg')}
+                    className={`py-2 px-0.5 rounded-lg transition text-center truncate ${
+                      subTabTraining === 'erg' ? `${st.btnPrimary} shadow-sm font-bold` : st.subtext
+                    }`}
+                  >
+                    Rameur Fix
                   </button>
                   <button
                     onClick={() => setSubTabTraining('core')}
-                    className={`flex-1 py-2 px-1 rounded-lg transition flex items-center justify-center gap-1 text-[11px] sm:text-xs ${
-                      subTabTraining === 'core' ? `${st.btnPrimary} shadow-sm font-semibold` : st.subtext
+                    className={`py-2 px-0.5 rounded-lg transition text-center truncate ${
+                      subTabTraining === 'core' ? `${st.btnPrimary} shadow-sm font-bold` : st.subtext
                     }`}
                   >
-                    <IconShield className="w-3.5 h-3.5 shrink-0" />
-                    <span>Core (5m)</span>
+                    Sol & Core
+                  </button>
+                  <button
+                    onClick={() => setSubTabTraining('audit')}
+                    className={`py-2 px-0.5 rounded-lg transition text-center truncate ${
+                      subTabTraining === 'audit' ? `${st.btnPrimary} shadow-sm font-bold` : st.subtext
+                    }`}
+                  >
+                    Audit/Nutri
                   </button>
                   <button
                     onClick={() => setSubTabTraining('load')}
-                    className={`flex-1 py-2 px-1 rounded-lg transition flex items-center justify-center gap-1 text-[11px] sm:text-xs ${
-                      subTabTraining === 'load' ? `${st.btnPrimary} shadow-sm font-semibold` : st.subtext
+                    className={`py-2 px-0.5 rounded-lg transition text-center truncate ${
+                      subTabTraining === 'load' ? `${st.btnPrimary} shadow-sm font-bold` : st.subtext
                     }`}
                   >
-                    <IconLayers className="w-3.5 h-3.5 shrink-0" />
-                    <span>12 Paliers</span>
+                    12 Paliers
                   </button>
                 </div>
 
-                {/* SUBTAB: RAMEUR & TEMPO */}
+                {/* SUBTAB 1: WORK-GYM 35-MINUTE PLAN (A/B) */}
+                {subTabTraining === 'gym' && (() => {
+                  const activeWk = gymWorkoutActiveTab === 'A' ? WORKOUT_A : WORKOUT_B;
+                  return (
+                    <div className="space-y-4">
+                      {/* Workout A vs Workout B Toggle */}
+                      <div className={`rounded-2xl p-4 border ${st.card} space-y-3 shadow-sm`}>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[10px] uppercase font-bold tracking-wider text-[#446857]">Plan Musculation de Travail</span>
+                            <h2 className="text-xs font-bold">{activeWk.title}</h2>
+                          </div>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${st.accentBg}`}>
+                            3x / semaine (35 min)
+                          </span>
+                        </div>
+
+                        {/* A / B Switch Buttons */}
+                        <div className="flex p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-[#e2ded6] dark:border-zinc-800 text-xs font-medium">
+                          <button
+                            onClick={() => setGymWorkoutActiveTab('A')}
+                            className={`flex-1 py-1.5 rounded-lg transition flex items-center justify-center gap-1.5 ${
+                              gymWorkoutActiveTab === 'A' ? `${st.btnPrimary} font-bold shadow-sm` : st.subtext
+                            }`}
+                          >
+                            <span>Workout A (Dos/Pecs)</span>
+                            {nextGymWorkout === 'A' && <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-400 text-emerald-950 font-bold">Conseillé</span>}
+                          </button>
+                          <button
+                            onClick={() => setGymWorkoutActiveTab('B')}
+                            className={`flex-1 py-1.5 rounded-lg transition flex items-center justify-center gap-1.5 ${
+                              gymWorkoutActiveTab === 'B' ? `${st.btnPrimary} font-bold shadow-sm` : st.subtext
+                            }`}
+                          >
+                            <span>Workout B (Tirage/Épaules)</span>
+                            {nextGymWorkout === 'B' && <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-400 text-emerald-950 font-bold">Conseillé</span>}
+                          </button>
+                        </div>
+
+                        {/* Spine-First Rule Banner */}
+                        <div className="p-3 rounded-xl border border-[#446857]/30 bg-[#446857]/10 text-xs space-y-1">
+                          <p className="font-bold text-[#446857] text-[11px] flex items-center gap-1">
+                            <IconShield className="w-3.5 h-3.5 shrink-0" /> {activeWk.spineRule.split(' : ')[0]} :
+                          </p>
+                          <p className="text-[11px] leading-relaxed opacity-90">{activeWk.spineRule.split(' : ')[1]}</p>
+                          <p className="text-[10px] opacity-75 pt-0.5 border-t border-[#446857]/20">
+                            ⏱️ {activeWk.executionRule}
+                          </p>
+                        </div>
+
+                        {/* Exercises List */}
+                        <div className="space-y-2.5 pt-1">
+                          {activeWk.exercises.map((ex, idx) => (
+                            <div key={idx} className={`p-3.5 rounded-2xl border ${st.subCard} space-y-2`}>
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <div className="flex items-center gap-1.5 mb-0.5">
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-[#446857]/15 text-[#446857]">
+                                      {ex.group}
+                                    </span>
+                                    {ex.paired && (
+                                      <span className="text-[10px] font-medium opacity-70">
+                                        Superset avec {ex.paired}
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h4 className="text-xs font-bold text-[#2c302e] dark:text-[#f4f2ee]">{ex.name}</h4>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  <span className="text-xs font-mono font-bold text-[#446857]">{ex.setsReps}</span>
+                                  <p className={`text-[9.5px] ${st.subtext}`}>{ex.rest}</p>
+                                </div>
+                              </div>
+
+                              <p className={`text-[10.5px] ${st.subtext}`}>{ex.purpose}</p>
+
+                              <div className="p-2.5 rounded-xl border border-[#e2ded6] dark:border-zinc-800 bg-black/5 dark:bg-white/5 text-[11px] leading-relaxed">
+                                <strong className="text-[#446857]">Repère biomécanique : </strong>
+                                {ex.cue}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#e2ded6] dark:border-zinc-800">
+                          <button
+                            onClick={() => handleQuickValidateGym(gymWorkoutActiveTab)}
+                            className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${st.btnPrimary} shadow-sm`}
+                          >
+                            <IconCheck className="w-3.5 h-3.5" />
+                            <span>⚡ Valider (1-Tap • 35m)</span>
+                          </button>
+                          <button
+                            onClick={() => {
+                              setGymRunnerWorkout(gymWorkoutActiveTab);
+                              setGymRunnerExerciseIndex(0);
+                              setGymRunnerSetIndex(1);
+                              setIsGymRestRunning(false);
+                              setGymRestSeconds(45);
+                              setShowGymRunnerModal(true);
+                            }}
+                            className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1.5 transition ${st.btnSecondary}`}
+                          >
+                            <IconPlay className="w-3.5 h-3.5 text-[#446857]" />
+                            <span>Lancer Guidé (Repos 45s)</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* SUBTAB 2: RAMEUR & FINISHER FIX (10x1m) */}
                 {subTabTraining === 'erg' && (
                   <div className="space-y-4">
+                    {/* Concept2 Rebuild Finisher Banner */}
+                    <div className={`rounded-2xl p-4 border ${st.card} space-y-3 shadow-sm`}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-[#b07d3a]">
+                          <IconFlame className="w-4 h-4" /> Concept2 Rebuild Finisher (10–15 Mins)
+                        </span>
+                        <span className="text-[10.5px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-800 dark:text-amber-300">
+                          Stop 4x4 min
+                        </span>
+                      </div>
+
+                      <div className="p-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-xs space-y-1">
+                        <p className="font-bold text-amber-900 dark:text-amber-200 text-[11px]">
+                          Pourquoi vos 4x4 min à 100W vous font mal :
+                        </p>
+                        <p className="text-[11px] leading-relaxed opacity-90 text-amber-950 dark:text-amber-100">
+                          {CONCEPT2_FIX.rationale}
+                        </p>
+                      </div>
+
+                      {/* 4 Golden Concept2 Rules */}
+                      <div className="space-y-2 text-xs">
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className="font-bold text-[#446857]">1. {CONCEPT2_FIX.damper.split(' (')[0]} :</p>
+                          <p className="text-[11px] opacity-85">{CONCEPT2_FIX.damper}</p>
+                        </div>
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className="font-bold text-[#446857]">2. {CONCEPT2_FIX.warmup.split(' : ')[0]} :</p>
+                          <p className="text-[11px] opacity-85">{CONCEPT2_FIX.warmup.split(' : ')[1]}</p>
+                        </div>
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className="font-bold text-[#446857]">3. Format 10 × (1 min ON / 1 min OFF) :</p>
+                          <p className="text-[11px] opacity-85">{CONCEPT2_FIX.protocol} — Permet de réinitialiser le dos avant fatigue.</p>
+                        </div>
+                        <div className={`p-2.5 rounded-xl border ${st.subCard}`}>
+                          <p className="font-bold text-[#446857]">4. Règle de charnière 11h :</p>
+                          <p className="text-[11px] opacity-85">{CONCEPT2_FIX.hingeRule}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#e2ded6] dark:border-zinc-800">
+                        <button
+                          onClick={handleQuickValidateConcept2Fix}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${st.btnPrimary} shadow-sm`}
+                        >
+                          <IconCheck className="w-3.5 h-3.5" />
+                          <span>⚡ Valider Finisher (130W)</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setC2IntervalRound(1);
+                            setC2IntervalPhase('warmup');
+                            setC2TimerSeconds(180);
+                            setIsC2TimerRunning(false);
+                            setShowConcept2FixModal(true);
+                          }}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1.5 transition ${st.btnSecondary}`}
+                        >
+                          <IconPlay className="w-3.5 h-3.5 text-[#446857]" />
+                          <span>Chrono Intervalles</span>
+                        </button>
+                      </div>
+                    </div>
+
                     {/* 1:2 Cadence Metronome */}
                     <div className={`rounded-2xl p-4 border ${st.card} space-y-3`}>
                       <div className="flex items-center justify-between">
@@ -2327,14 +3750,67 @@ Fais un audit de progression :
                   </div>
                 )}
 
-                {/* SUBTAB: CORE SHIELD TIMER */}
+                {/* SUBTAB 3: SOL & CORE (Routine Soir 4m & Core Shield 5m) */}
                 {subTabTraining === 'core' && (
                   <div className="space-y-4">
+                    {/* Routine Sol Quotidienne Soir (4 min) */}
+                    <div className={`rounded-2xl p-4 border ${st.card} space-y-3 shadow-sm`}>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-[#446857]">Chaque Soir sur le Tapis</span>
+                          <h2 className="text-xs font-bold">{FLOOR_ROUTINE.title}</h2>
+                        </div>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${floorCompletedToday ? 'bg-emerald-500/15 text-emerald-800' : st.accentBg}`}>
+                          {floorCompletedToday ? '✓ Validé ce soir' : 'À faire ce soir'}
+                        </span>
+                      </div>
+
+                      <p className={`text-xs ${st.subtext}`}>
+                        {FLOOR_ROUTINE.rationale}
+                      </p>
+
+                      <div className="space-y-2 pt-0.5">
+                        {FLOOR_ROUTINE.exercises.map((ex, idx) => (
+                          <div key={idx} className={`p-3 rounded-xl border ${st.subCard} space-y-1`}>
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-xs font-bold">{ex.name}</h4>
+                              <span className="text-[10px] font-mono font-bold text-[#446857]">{ex.prescription}</span>
+                            </div>
+                            <p className="text-[10.5px] opacity-85">{ex.cue}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#e2ded6] dark:border-zinc-800">
+                        <button
+                          onClick={handleQuickValidateFloorRoutine}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition ${st.btnPrimary} shadow-sm`}
+                        >
+                          <IconCheck className="w-3.5 h-3.5" />
+                          <span>⚡ Valider (4m Sol)</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setFloorExerciseIndex(0);
+                            setFloorTimerSeconds(36);
+                            setIsFloorTimerRunning(false);
+                            setShowFloorRoutineModal(true);
+                          }}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-semibold border flex items-center justify-center gap-1.5 transition ${st.btnSecondary}`}
+                        >
+                          <IconPlay className="w-3.5 h-3.5 text-[#446857]" />
+                          <span>Chrono Guidé (4m)</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Core Shield Classique (5 min) */}
                     <div className={`rounded-2xl p-5 border ${st.card} text-center space-y-4`}>
                       <div className="flex items-center justify-between border-b border-[#e2ded6] dark:border-zinc-800 pb-3">
-                        <span className="text-xs font-bold uppercase tracking-wider text-[#446857]">
-                          Étape {corePhaseIndex + 1} sur {coreExercises.length}
-                        </span>
+                        <div className="text-left">
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-[#446857]">Core Shield (5 min)</span>
+                          <h3 className="text-xs font-bold">Étape {corePhaseIndex + 1} sur {coreExercises.length}</h3>
+                        </div>
                         <button 
                           onClick={() => {
                             setIsCoreRunning(false);
@@ -2383,6 +3859,65 @@ Fais un audit de progression :
                             Suivant &rarr;
                           </button>
                         )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* SUBTAB 4: AUDIT BIOMÉCANIQUE & NUTRITION */}
+                {subTabTraining === 'audit' && (
+                  <div className="space-y-4">
+                    <div className={`rounded-2xl p-4 border ${st.card} space-y-3 shadow-sm`}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 text-[#446857]">
+                          <IconBrain className="w-4 h-4" /> Diagnostic Clinique & Réalité
+                        </span>
+                        <span className={`text-[10.5px] font-bold px-2 py-0.5 rounded-full ${st.accentBg}`}>
+                          Biomécanique
+                        </span>
+                      </div>
+
+                      <div className="space-y-3 text-xs leading-relaxed">
+                        {BIOMECHANICAL_AUDIT.items.map((item, idx) => (
+                          <div key={idx} className={`p-3.5 rounded-2xl border ${st.subCard} space-y-1.5`}>
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-xs font-bold text-[#446857]">{item.title}</h4>
+                              <span className="text-[9.5px] font-semibold opacity-70 uppercase tracking-wider">{item.subtitle}</span>
+                            </div>
+                            <p className="text-[11px] opacity-90 leading-relaxed">{item.desc}</p>
+                          </div>
+                        ))}
+
+                        {/* Interactive Nutrition Calculator */}
+                        <div className="p-4 rounded-2xl border border-[#446857]/30 bg-[#446857]/10 space-y-2.5">
+                          <span className="text-xs font-bold text-[#446857] uppercase tracking-wider block">
+                            Calculateur Nutrition Overhaul (1,6 g / kg)
+                          </span>
+                          <div className="flex items-center justify-between text-xs">
+                            <span>Poids corporel de référence :</span>
+                            <span className="font-bold font-mono text-sm">{userBodyweight} kg</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="70"
+                            max="115"
+                            value={userBodyweight}
+                            onChange={e => setUserBodyweight(Number(e.target.value))}
+                            className="w-full accent-[#446857] cursor-pointer"
+                          />
+                          <div className="grid grid-cols-2 gap-2 text-center pt-1 text-xs">
+                            <div className="p-2.5 rounded-xl bg-white/70 dark:bg-black/30 border border-[#446857]/20">
+                              <p className="text-[10px] opacity-75">Cible Protéines :</p>
+                              <p className="text-base font-bold text-[#446857] mt-0.5">{Math.round(userBodyweight * 1.6)} g / jour</p>
+                              <p className={`text-[9.5px] ${st.subtext}`}>1.6g / kg de poids de corps</p>
+                            </div>
+                            <div className="p-2.5 rounded-xl bg-white/70 dark:bg-black/30 border border-[#446857]/20">
+                              <p className="text-[10px] opacity-75">Déficit Quotidien :</p>
+                              <p className="text-base font-bold text-[#b07d3a] mt-0.5">-300 à -500 kcal</p>
+                              <p className={`text-[9.5px] ${st.subtext}`}>Perte masse grasse viscérale</p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2628,22 +4163,28 @@ Fais un audit de progression :
                   {/* Quick prompt chips */}
                   <div className="flex flex-wrap gap-1.5 pt-0.5">
                     <button 
-                      onClick={() => setAiChatInput("Pourquoi mon psoas droit tire après une journée assis ?")}
+                      onClick={() => setAiChatInput("C'est quoi les exercices de Workout A et B ?")}
                       className="text-[10.5px] px-2.5 py-1 rounded-lg border border-[#e2ded6] dark:border-zinc-700 hover:border-[#446857] transition opacity-80"
                     >
-                      Tension psoas assis ?
+                      🏋️ Workout A & B ?
                     </button>
                     <button 
-                      onClick={() => setAiChatInput("Comment ajuster mes cale-pieds sur Concept2 pour 187 cm ?")}
+                      onClick={() => setAiChatInput("Pourquoi mon dos fait mal à 100W sur le rameur ?")}
                       className="text-[10.5px] px-2.5 py-1 rounded-lg border border-[#e2ded6] dark:border-zinc-700 hover:border-[#446857] transition opacity-80"
                     >
-                      Cale-pieds pour 187 cm ?
+                      🚣 Douleur à 100W ?
                     </button>
                     <button 
-                      onClick={() => setAiChatInput("Protocole express de 12 min sans matériel au bureau ?")}
+                      onClick={() => setAiChatInput("Rappelle-moi la Routine Sol de 4 min pour ce soir")}
                       className="text-[10.5px] px-2.5 py-1 rounded-lg border border-[#e2ded6] dark:border-zinc-700 hover:border-[#446857] transition opacity-80"
                     >
-                      12 min au bureau ?
+                      🌙 Routine Sol 4 min ?
+                    </button>
+                    <button 
+                      onClick={() => setAiChatInput("Combien de protéines et quel déficit pour mon poids ?")}
+                      className="text-[10.5px] px-2.5 py-1 rounded-lg border border-[#e2ded6] dark:border-zinc-700 hover:border-[#446857] transition opacity-80"
+                    >
+                      🥩 Protéines & Nutrition ?
                     </button>
                   </div>
 
@@ -2654,7 +4195,7 @@ Fais un audit de progression :
                       value={aiChatInput}
                       onChange={e => setAiChatInput(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleSendAiChat()}
-                      placeholder="Question sur dos, rameur, minéraux, progression..."
+                      placeholder="Question sur dos, musculation, rameur, minéraux, nutrition..."
                       className={`flex-1 px-3 py-2 rounded-xl text-xs border outline-none ${st.subCard}`}
                     />
                     <button
@@ -2691,10 +4232,12 @@ Fais un audit de progression :
                                 w.type === 'CONCEPT2' ? st.accentBg :
                                 w.type === 'SWIM' ? 'bg-cyan-500/15 text-cyan-800' :
                                 w.type === 'HIKE' ? 'bg-amber-500/15 text-amber-800' : 
-                                w.type === 'WORK_GYM' ? 'bg-purple-500/15 text-purple-800' :
+                                w.type === 'WORK_GYM' ? 'bg-purple-500/15 text-purple-800 dark:text-purple-300' :
                                 'bg-stone-500/15 text-stone-800'
                               }`}>
-                                {w.type}
+                                {w.type === 'WORK_GYM' ? (w.notes?.includes('Workout A') ? 'WORKOUT A' : w.notes?.includes('Workout B') ? 'WORKOUT B' : 'SALLE 35M') :
+                                 w.type === 'CORE_SHIELD' ? (w.notes?.includes('Routine Sol') ? 'SOL SOIR' : 'CORE SHIELD') :
+                                 w.type}
                               </span>
                               {w.level && <span className={`text-[10px] ${st.subtext}`}>Niv.{w.level}</span>}
                             </div>
