@@ -12,31 +12,41 @@ Application web progressive (PWA) personnelle dédiée à la longévité athlét
 
 ---
 
-## ⚡ Architecture 3 Onglets & Ergonomie
+## ⚡ Architecture 4 Onglets & Companion UX (« No-Brainer »)
 
-* **1. Aujourd'hui (Centre de décision quotidien)** :
-  * Triage biomécanique instantané (0 ms) et prescription ajustée du jour avec steppers rapides (+/- 5W, +/- 1 cad).
-  * **Programme Musculation 35m (A/B)** : Alternance Workout A / B avec lanceur guidé pas-à-pas (supersets & repos 45s) et validation 1-Tap.
-  * **Rameur Rebuild 10×1m** : Bascule 1-clic entre le protocole décompressif 10×(1m ON / 1m OFF @ 120–140W) et la roadmap classique.
-  * **Routine Sol Soir (4 min)** : Anti-flexion lombaire pour le soir (Glute bridge, Bird-Dog, Gainage latéral) avec timer guidé ou 1-Tap.
-  * **Sas Bureau & Disciplines Alternatives** : Raccourcis rapides 1-Tap (Sas décompression bureau, Natation 750m, Rando Zone 2) et tiroir unifié.
-* **2. Entraînement & Progression (Hub 5 Sous-onglets)** :
-  * **Muscu 35m** : Détail complet des séances A & B, consignes biomécaniques (Spine-First, banc 30-45°, trépied plantaire), lanceur et timer 45s.
-  * **Rameur Fix** : Diagnostic Concept2, réglage Damper 3-4 (Drag 110-115), échauffement 3m Feet Out, chrono d'intervalles 10×1m, métronome 1:2 et SPI.
-  * **Sol & Core** : Routine Sol Soirée 4 min (zéro crunch, renforcement fessiers/obliques) et routine Core Shield 5 min.
-  * **Audit & Nutri** : Audit biomécanique complet (posture assise, lordose/bassin, affaissement voûte plantaire) et calculateur interactif protéines (1.6g/kg) & déficit (-300 à -500 kcal).
-  * **12 Paliers** : Feuille de route 24 mois (de 100W à 180W+ sans dépasser 25 minutes).
-* **3. Journal & Outils (Synthèse, Sauvegarde & Coach IA)** :
-  * **Synthèse Globale** : Compteur d'activités, palier actif et dernier SPI enregistré.
-  * **Barre d'actions 1-Tap** : Sauvegarde directe Google Drive, import Huawei/Concept2 et audit de régularité par IA.
-  * **Coach IA Biomécanique & Chat** : Échange interactif direct, intégration de l'audit postural et des règles Spine-First, génération de tickets séances [SESSION_DATA] exécutables en 1-Tap, multi-clés Gemini gratuites et fallback local.
-  * **Historique des Séances** : Journal chronologique complet avec badges spécifiques (`WORKOUT A`, `WORKOUT B`, `RAMEUR 10×1M`, `SOL SOIR`, `CORE SHIELD`).
-* **🔔 Rappels PWA Automatiques** :
-  * **Matin (< 8h)** : Notification pour lancer le check-in quotidien et la séance conseillée.
-  * **Soir (~ 21h)** : Rappel de bienveillance pour la routine sol soirée de 4 minutes ou Core Shield.
-* **☁️ Synchronisation & Imports** :
-  * **Drive 1-Tap** : Sauvegarde instantanée vers Google Drive sans manipulation de fichiers intermédiaires.
-  * **Imports Matériel** : Montre Huawei Santé (`.tcx`, `.gpx`), Concept2 ErgData (`.csv`) ou collage de texte partagé.
+* **1. Aujourd'hui (Dashboard Zéro Friction)** :
+  * **Carte Héro Prochaine Séance** : Grand bouton dominant `[ ▶ COMMENCER LA SÉANCE ]`, alternance A/B mémorisée, aperçu des exercices et mode express « ⚡ 20 min chrono ».
+  * **Check-in Dos 1-Tap (👍 Solide / 😐 Tendu / ⚠️ Douleur)** : Triage biomécanique instantané qui adapte dynamiquement la séance principale (en cas de douleur, remplacement automatique par le Sas décompression + routine sol).
+  * **Raccourcis 1-Ligne Rapides** : Routine Sol Soir (4 min) et Finisher Rameur 10×1m avec lancement direct ou validation 1-Tap.
+  * **Rail Hebdomadaire (L M M J V S D)** : Visualisation immédiate des jours validés et du streak d'assiduité 🔥.
+  * **Bouton « + Autre activité »** : Tiroir unifié pour la natation (750m), la rando, le sas bureau ou la saisie libre.
+* **2. Plan (Feuille de Route & Bibliothèque)** :
+  * **Cycle Hebdo Musculation** : Alternance A-B-A / B-A-B détaillée avec les règles biomécaniques Spine-First (bancs 30–45° et 75–80°, trépied plantaire).
+  * **Fiches de Séances Complètes** : Workout A, Workout B, Rameur Rebuild 10×1m, Routine Sol Soirée 4 min et Sas Bureau 3 min.
+  * **Feuille de Route 24 mois** : Progression guidée sur 12 paliers Concept2 (de 100W à 180W+ à basse cadence 18–20 s/m).
+* **3. Progrès (Objectifs, Métriques & Historique)** :
+  * **Jauges d'Objectifs Hebdo** : Suivi de complétion Muscu (3x), Rameur (2x) et Routine Sol (7x).
+  * **Nutrition & Poids** : Calculateur interactif du ratio de protéines (1.6 g/kg de poids de corps) et déficit calorique cible (-300 à -500 kcal).
+  * **Historique Complet & Détaillé** : Journal de toutes les séances enregistrées avec détail des séries (charges, répétitions, volume total en kg).
+* **4. Moi (Bilan Biomécanique, IA & Réglages)** :
+  * **Bilan Biomécanique & Réalité** : Diagnostic complet (posture assise, lordose, affaissement voûte plantaire, douleur à 100W sur rameur).
+  * **Coach IA Biomécanique** : Chat interactif avec tickets de séance `[SESSION_DATA]` exécutables en 1-Tap.
+  * **Retour Sensoriel & PWA** : Thème sombre haute visibilité / thème clair, carillons sonores synthétisés, retour haptique (vibrations) et annonces vocales (Web Speech API).
+  * **Gestion des Données** : Export & Import JSON hors-ligne, sauvegarde automatique.
+
+---
+
+## 🏋️ Mode Salle Plein Écran (Session Runner)
+
+* **Zéro réflexion mentale** : Un seul exercice à la fois avec grands chiffres tactiles (48px+), steppers poids/reps, et consigne clé en 1 ligne.
+* **Moteur Coach Adaptatif** :
+  * **Charges de départ suggérées** basées sur votre poids de corps et profil prudent (dos L4-L5).
+  * **Adaptation INTRA-séance** : Enregistrement du ressenti (🟢 Facile / 🔵 Parfait / 🔴 Dur). Si une série est trop facile, le coach augmente la charge de la suivante ; si trop dure, il l'allège automatiquement pour sécuriser le dos.
+  * **Adaptation INTER-séances** : Double progression automatique (rep max atteint sur toutes les séries → augmentation de charge).
+  * **Option « Machine prise ? »** : Remplacement immédiat par l'alternative sans charge axiale (Bulgarian Split Squat ⇄ Goblet Squat talons calés, Leg Curl ⇄ RDL contrôlé).
+* **Minuteur de Repos Automatique (45s)** : Décompte en anneau avec transitions sonores et vibrations.
+* **Sécurité Écran Allumé (Wake Lock)** : L'écran reste allumé durant l'effort.
+* **100% Hors-Ligne & Résilient** : Service worker v3 avec mise en cache runtime des CDN (Tailwind, React, Babel).
 
 ---
 
