@@ -1,18 +1,17 @@
 {
-  "name": "Health & Longevity OS",
-  "short_name": "HealthOS",
-  "description": "Système de sport-santé, longévité, protection lombaire et Concept2",
+  "id": "./",
+  "name": "Health OS",
+  "short_name": "Health OS",
+  "description": "Coach sport-santé personnel : musculation Spine-First, rameur Concept2, routine dos.",
+  "lang": "fr",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f4f2ee",
   "theme_color": "#324f42",
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }

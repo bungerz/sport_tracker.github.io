@@ -1,64 +1,42 @@
-# Health & Longevity OS
+# Health OS
 
-Application web progressive (PWA) personnelle dédiée à la longévité athlétique, la santé discale (L4-L5) et l'optimisation biomécanique sur rameur Concept2, natation et montagne.
+Coach sport-santé personnel (PWA) : musculation **Spine-First** pour protéger L4-L5, rameur Concept2 à basse cadence, routine dos du soir. Tout est stocké sur le téléphone et l’app fonctionne **100 % hors-ligne**.
 
----
+## Les 4 onglets
 
-## 🎯 Philosophie & Principes
+| Onglet | Contenu |
+| --- | --- |
+| **Aujourd’hui** | Semaine en un coup d’œil (jours actifs + objectifs 3 muscu / 2 rameur / 7 sol), check-in dos en 1 tap, prochaine séance avec les **charges cibles déjà calculées**, rituels du jour (routine sol, finisher rameur, sas bureau) à lancer ou valider en 1 tap, ajout d’une activité libre (natation, rando, etc.). |
+| **Programme** | Semaine type, fiches complètes Muscu A / B (consignes, matériel, alternatives, prochaine cible), protocole rameur, feuille de route 12 paliers, routines sol et bureau, bilan biomécanique. |
+| **Progrès** | Anneaux d’objectifs de la semaine, statistiques sur 30 jours, graphique des 8 dernières semaines, courbe de charge par exercice, puissance/SPI rameur, poids et cible protéines, journal détaillé (touche une séance pour le détail ou la supprimer). |
+| **Profil** | Poids de corps, durée de repos, sons / vibrations / voix, thème (auto, clair, sombre), coach IA, export / import / effacement des données. |
 
-* **Sécurité lombaire absolue** : Prévention des spasmes du psoas, sas de décompression bureau → sport, renforcement du transverse et des fessiers.
-* **Puissance à basse cadence (Torque)** : Travail systématique à 18–22 s/m avec un *Stroke Power Index* (SPI) élevé (≥ 5.0).
-* **Zéro friction** : Bilan en 3 taps, validation des séances en 1 clic, fonctionnement autonome et 100% hors-ligne.
+## Modes séance plein écran
 
----
+- **Muscu** : un exercice à la fois, grandes commandes charge/reps, consigne et alternative « machine prise ? ». On valide chaque série par son ressenti (*Facile / Parfait / Dur*) : la série suivante est ajustée automatiquement. Supersets : 20 s d’enchaînement entre A et B, repos complet (45 s par défaut) en fin de tour. Annuler / passer une série, récapitulatif avant enregistrement, séance reprise automatiquement si l’app est fermée.
+- **Rameur** : échauffement 3 min pieds libres puis 10 × (1′ effort / 1′ repos), bips et annonces à chaque phase, pause, puis saisie des watts/cadence moyens (SPI calculé).
+- **Routines sol / bureau / décompression** : minuteurs pour les tenues, suivi des côtés et des séries.
 
-## ⚡ Architecture 4 Onglets & Companion UX (« No-Brainer »)
+Les minuteurs reposent sur l’heure réelle : ils restent justes même écran verrouillé. L’écran reste allumé pendant une séance (Wake Lock).
 
-* **1. Aujourd'hui (Dashboard Zéro Friction)** :
-  * **Carte Héro Prochaine Séance** : Grand bouton dominant `[ ▶ COMMENCER LA SÉANCE ]`, alternance A/B mémorisée, aperçu des exercices et mode express « ⚡ 20 min chrono ».
-  * **Check-in Dos 1-Tap (👍 Solide / 😐 Tendu / ⚠️ Douleur)** : Triage biomécanique instantané qui adapte dynamiquement la séance principale (en cas de douleur, remplacement automatique par le Sas décompression + routine sol).
-  * **Raccourcis 1-Ligne Rapides** : Routine Sol Soir (4 min) et Finisher Rameur 10×1m avec lancement direct ou validation 1-Tap.
-  * **Rail Hebdomadaire (L M M J V S D)** : Visualisation immédiate des jours validés et du streak d'assiduité 🔥.
-  * **Bouton « + Autre activité »** : Tiroir unifié pour la natation (750m), la rando, le sas bureau ou la saisie libre.
-* **2. Plan (Feuille de Route & Bibliothèque)** :
-  * **Cycle Hebdo Musculation** : Alternance A-B-A / B-A-B détaillée avec les règles biomécaniques Spine-First (bancs 30–45° et 75–80°, trépied plantaire).
-  * **Fiches de Séances Complètes** : Workout A, Workout B, Rameur Rebuild 10×1m, Routine Sol Soirée 4 min et Sas Bureau 3 min.
-  * **Feuille de Route 24 mois** : Progression guidée sur 12 paliers Concept2 (de 100W à 180W+ à basse cadence 18–20 s/m).
-* **3. Progrès (Objectifs, Métriques & Historique)** :
-  * **Jauges d'Objectifs Hebdo** : Suivi de complétion Muscu (3x), Rameur (2x) et Routine Sol (7x).
-  * **Nutrition & Poids** : Calculateur interactif du ratio de protéines (1.6 g/kg de poids de corps) et déficit calorique cible (-300 à -500 kcal).
-  * **Historique Complet & Détaillé** : Journal de toutes les séances enregistrées avec détail des séries (charges, répétitions, volume total en kg).
-* **4. Moi (Bilan Biomécanique, IA & Réglages)** :
-  * **Bilan Biomécanique & Réalité** : Diagnostic complet (posture assise, lordose, affaissement voûte plantaire, douleur à 100W sur rameur).
-  * **Coach IA Biomécanique** : Chat interactif avec tickets de séance `[SESSION_DATA]` exécutables en 1-Tap.
-  * **Retour Sensoriel & PWA** : Thème sombre haute visibilité / thème clair, carillons sonores synthétisés, retour haptique (vibrations) et annonces vocales (Web Speech API).
-  * **Gestion des Données** : Export & Import JSON hors-ligne, sauvegarde automatique.
+## Moteur de progression
 
----
+- Charges de départ prudentes calculées à partir du poids de corps.
+- **Double progression** : toutes les séries au haut de la fourchette → +1 palier de charge et retour au bas de la fourchette ; sinon +1 rep visée ; séance difficile → charge allégée.
+- Check-in **Tendu** : charges maintenues. **Douleur** : la séance muscu est remplacée par le protocole décompression (sas bureau + routine sol).
 
-## 🏋️ Mode Salle Plein Écran (Session Runner)
+## Coach IA (optionnel)
 
-* **Zéro réflexion mentale** : Un seul exercice à la fois avec grands chiffres tactiles (48px+), steppers poids/reps, et consigne clé en 1 ligne.
-* **Moteur Coach Adaptatif** :
-  * **Charges de départ suggérées** basées sur votre poids de corps et profil prudent (dos L4-L5).
-  * **Adaptation INTRA-séance** : Enregistrement du ressenti (🟢 Facile / 🔵 Parfait / 🔴 Dur). Si une série est trop facile, le coach augmente la charge de la suivante ; si trop dure, il l'allège automatiquement pour sécuriser le dos.
-  * **Adaptation INTER-séances** : Double progression automatique (rep max atteint sur toutes les séries → augmentation de charge).
-  * **Option « Machine prise ? »** : Remplacement immédiat par l'alternative sans charge axiale (Bulgarian Split Squat ⇄ Goblet Squat talons calés, Leg Curl ⇄ RDL contrôlé).
-* **Minuteur de Repos Automatique (45s)** : Décompte en anneau avec transitions sonores et vibrations.
-* **Sécurité Écran Allumé (Wake Lock)** : L'écran reste allumé durant l'effort.
-* **100% Hors-Ligne & Résilient** : Service worker v3 avec mise en cache runtime des CDN (Tailwind, React, Babel).
+Ajoute une clé API Gemini (gratuite sur aistudio.google.com) dans **Profil → Coach IA**. Le coach connaît ton programme, ton état du jour et tes dernières séances ; il peut proposer une séance à enregistrer en 1 tap. La clé reste sur l’appareil et n’est envoyée qu’à l’API Google.
 
----
+## Installation
 
-## 📱 Installation (PWA Mobile)
+1. Ouvre le site dans Safari (iOS) ou Chrome (Android).
+2. **Partager → Sur l’écran d’accueil** (iOS) ou **⋮ → Installer l’application** (Android).
 
-1. Ouvrez l'application dans votre navigateur mobile (Safari sur iOS, Chrome sur Android).
-2. Touchez **Partager** (iOS) ou le **Menu ⋮** (Android) puis sélectionnez **« Sur l'écran d'accueil »**.
-3. L'application s'exécute en plein écran avec prise en charge du mode hors-ligne.
+## Technique
 
----
-
-## 🔒 Confidentialité & Sécurité
-
-* **100% Local** : Toutes les séances et constantes restent stockées dans le `localStorage` de votre appareil.
-* **Clé API Gemini** : Si renseignée, elle est conservée strictement sur votre téléphone et n'est jamais exposée ni envoyée à un serveur tiers.
+- HTML/CSS/JavaScript natif (modules ES), **aucune dépendance ni étape de build** : il suffit de servir le dossier (GitHub Pages).
+- `js/data.js` programmes · `js/engine.js` progression · `js/store.js` état et stockage · `js/views.js` écrans · `js/runners.js` modes séance · `js/coach.js` coach IA · `js/app.js` démarrage et actions.
+- Données dans `localStorage` (clés `health_os_*`) — les données des versions précédentes sont reprises automatiquement. L’export JSON contient séances, charges, pesées et réglages (sans la clé API).
+- Test local : `python3 -m http.server` puis http://localhost:8000.

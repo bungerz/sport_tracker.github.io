@@ -1,114 +1,63 @@
-const CACHE_NAME = 'health-os-cache-v3';
-const CDN_CACHE_NAME = 'health-os-cdn-v3';
-
-const ASSETS_TO_CACHE = [
+// Health OS — service worker
+// Réseau d'abord pour les fichiers de l'app (mises à jour immédiates),
+// cache en secours (fonctionnement 100 % hors-ligne).
+const CACHE = 'health-os-v11';
+const ASSETS = [
   './',
   './index.html',
+  './styles.css',
   './manifest.json',
-  './icon.svg'
-];
-
-const CDN_ASSETS = [
-  'https://cdn.tailwindcss.com',
-  'https://unpkg.com/react@18/umd/react.production.min.js',
-  'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-  'https://unpkg.com/@babel/standalone/babel.min.js'
+  './icon.svg',
+  './js/app.js',
+  './js/store.js',
+  './js/data.js',
+  './js/lib.js',
+  './js/engine.js',
+  './js/views.js',
+  './js/runners.js',
+  './js/coach.js'
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    Promise.all([
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)),
-      caches.open(CDN_CACHE_NAME).then((cache) => {
-        // Cache CDN assets quietly, don't fail install if network is down
-        return Promise.allSettled(
-          CDN_ASSETS.map((url) =>
-            fetch(url, { mode: 'cors' })
-              .then((res) => {
-                if (res.ok) return cache.put(url, res);
-              })
-              .catch((e) => console.log('CDN pre-cache skipped for:', url, e.message))
-          )
-        );
-      })
-    ])
-  );
+  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME && key !== CDN_CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  const req = event.request;
+  const url = new URL(req.url);
+  // Uniquement nos propres fichiers en GET (l'API du coach IA passe directement)
+  if (req.method !== 'GET' || url.origin !== self.location.origin) return;
 
-  // External CDN scripts: Cache-first, network fallback & cache
-  if (url.origin.includes('unpkg.com') || url.origin.includes('tailwindcss.com')) {
-    event.respondWith(
-      caches.open(CDN_CACHE_NAME).then((cache) => {
-        return cache.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          return fetch(event.request).then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              cache.put(event.request, networkResponse.clone());
-            }
-            return networkResponse;
-          }).catch(() => {
-            return cachedResponse;
-          });
-        });
-      })
-    );
-    return;
-  }
-
-  // Local assets: Stale-While-Revalidate with index.html fallback
   event.respondWith(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.match(event.request).then((cachedResponse) => {
-        const fetchPromise = fetch(event.request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              cache.put(event.request, networkResponse.clone());
-            }
-            return networkResponse;
-          })
-          .catch(() => {
-            return cachedResponse || cache.match('./index.html');
-          });
-
-        return cachedResponse || fetchPromise;
-      });
-    })
+    fetch(req)
+      .then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() =>
+        caches.match(req, { ignoreSearch: true }).then((hit) => hit || (req.mode === 'navigate' ? caches.match('./index.html') : undefined))
+      )
   );
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow('./');
-      }
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) if ('focus' in c) return c.focus();
+      return clients.openWindow ? clients.openWindow('./') : undefined;
     })
   );
 });
